@@ -85,10 +85,10 @@
 const params=new URLSearchParams(window.location.search);
 const TZ=params.get('tz')||'ET';
 const THEME=params.get('theme')||'dark';
-const TZ_OFF={ET:0,CT:-1,MT:-2,PT:-3,UTC:4,BST:5,CEST:6,GST:8};
-const TZ_NAME={ET:'Eastern US',CT:'Central US',MT:'Mountain US',PT:'Pacific US',UTC:'UTC',BST:'UK (BST)',CEST:'Central European (CEST)',GST:'Gulf Standard (GST)'};
-const TZ_TV_MODE={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'none',BST:'uk',CEST:'none',GST:'none'};
-const TZ_DATE_FMT={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'us',BST:'uk',CEST:'us',GST:'us'};
+const TZ_OFF={ET:0,CT:-1,MT:-2,PT:-3,UTC:4,BST:5,CEST:6,GST:8,AEST:14,NZST:16};
+const TZ_NAME={ET:'Eastern US',CT:'Central US',MT:'Mountain US',PT:'Pacific US',UTC:'UTC',BST:'UK (BST)',CEST:'Central European (CEST)',GST:'Gulf Standard (GST)',AEST:'Australian Eastern (AEST)',NZST:'New Zealand (NZST)'};
+const TZ_TV_MODE={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'none',BST:'uk',CEST:'none',GST:'none',AEST:'none',NZST:'none'};
+const TZ_DATE_FMT={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'us',BST:'uk',CEST:'us',GST:'us',AEST:'us',NZST:'us'};
 const offset=TZ_OFF[TZ]||0;
 const tvMode=TZ_TV_MODE[TZ]||'us';
 const dateFmt=TZ_DATE_FMT[TZ]||'us';
@@ -282,7 +282,7 @@ const mL={};M.forEach(m=>{const k=m[6]+'_'+m[1];if(!mL[k])mL[k]=[];mL[k].push(m)
 const mDays=new Set();M.forEach(m=>mDays.add(m[1]));
 const VW=263,GW=3300-VW,grpH=514;
 let tW=0;
-const gsEndDay=offset>=4?29:27;// Widen June 28-29 for shifted timezones
+const gsEndDay=offset>=14?30:offset>=4?29:27;// Widen June 28-29 for shifted timezones
 const dWts=DD.map(d=>{if(!d)return(tW+=2.2,2.2);const dn=d.getDate(),mo=d.getMonth();if(mo===5&&dn>=11&&dn<=gsEndDay)return(tW+=4,4);return(tW+=1.8,1.8)});
 const dW=dWts.map(w=>Math.round(w*GW/tW));
 const moH=26,hdrH=71,stgH=40;
@@ -346,7 +346,7 @@ stgData.forEach(([s,e,lbl])=>{const w=e-s;stg+=`<div class="stage-label-abs" sty
 // OFF days (adjust for timezone)
 let offDays=[[6,8],[6,12],[6,13],[6,16],[6,17]];
 if(offset>=8)offDays=offDays.filter(([m,d])=>!(m===6&&d===12));// GST: QF shifts to Jul 12
-if(offset>=5)offDays=offDays.filter(([m,d])=>!(m===6&&d===12));// BST: similar
+if(offset>=5)offDays=offDays.filter(([m,d])=>!(m===6&&d===12));// BST+: QF may shift
 offDays.forEach(([mo2,dy])=>{const[s,e]=dateRange(mo2,dy,mo2,dy);if(e>s)stg+=`<div class="stage-off-abs" style="left:${s}px;width:${e-s}px">OFF</div>`});
 stg+='</div>';
 
