@@ -88,7 +88,7 @@ const THEME=params.get('theme')||'dark';
 const TZ_OFF={ET:0,CT:-1,MT:-2,PT:-3,UTC:4,BST:5,CEST:6,GST:8,AEST:14,NZST:16};
 const TZ_NAME={ET:'Eastern US',CT:'Central US',MT:'Mountain US',PT:'Pacific US',UTC:'UTC',BST:'UK (BST)',CEST:'Central European (CEST)',GST:'Gulf Standard (GST)',AEST:'Australian Eastern (AEST)',NZST:'New Zealand (NZST)'};
 const TZ_TV_MODE={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'none',BST:'uk',CEST:'none',GST:'none',AEST:'none',NZST:'none'};
-const TZ_DATE_FMT={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'us',BST:'uk',CEST:'us',GST:'us',AEST:'us',NZST:'us'};
+const TZ_DATE_FMT={ET:'us',CT:'us',MT:'us',PT:'us',UTC:'us',BST:'uk',CEST:'us',GST:'us',AEST:'uk',NZST:'uk'};
 const offset=TZ_OFF[TZ]||0;
 const tvMode=TZ_TV_MODE[TZ]||'us';
 const dateFmt=TZ_DATE_FMT[TZ]||'us';
@@ -218,7 +218,8 @@ root.setProperty('color',P.textMain);
 // Populate title bar dynamically
 {
   const tb=document.getElementById('title-bar-content');
-  const datesText=dateFmt==='uk'?'11 JUNE – 19 JULY':'JUNE 11 – JULY 19';
+  const firstDay=offset>=9?12:11;const lastDay=offset>=9?20:19;
+  const datesText=dateFmt==='uk'?firstDay+' JUNE – '+lastDay+' JULY':'JUNE '+firstDay+' – JULY '+lastDay;
   const tvText=tvMode==='us'?'FOX / FS1':tvMode==='uk'?'BBC / ITV':'';
   const infoLine2='All times '+TZ_NAME[TZ]+(tvText?' \u00a0|\u00a0 '+tvText:'');
   tb.innerHTML='<h1>2026 <span class="year">FIFA World Cup</span></h1>'+
@@ -228,7 +229,8 @@ root.setProperty('color',P.textMain);
 }
 
 const V=[{id:'VAN',city:'Vancouver',stad:'BC Place',co:'ca'},{id:'TOR',city:'Toronto',stad:'BMO Field',co:'ca'},{id:'MEX',city:'Mexico City',stad:'Estadio Azteca',co:'mx'},{id:'MTY',city:'Monterrey',stad:'Estadio BBVA',co:'mx'},{id:'GDL',city:'Guadalajara',stad:'Estadio Akron',co:'mx'},{id:'SFO',city:'San Francisco',stad:"Levi's Stadium",co:'us'},{id:'HOU',city:'Houston',stad:'NRG Stadium',co:'us'},{id:'PHI',city:'Philadelphia',stad:'Lincoln Financial Field',co:'us'},{id:'SEA',city:'Seattle',stad:'Lumen Field',co:'us'},{id:'BOS',city:'Boston',stad:'Gillette Stadium',co:'us'},{id:'KCM',city:'Kansas City',stad:'Arrowhead Stadium',co:'us'},{id:'LAX',city:'Los Angeles',stad:'SoFi Stadium',co:'us'},{id:'DAL',city:'Dallas',stad:'AT&T Stadium',co:'us'},{id:'ATL',city:'Atlanta',stad:'Mercedes-Benz Stadium',co:'us'},{id:'MIA',city:'Miami',stad:'Hard Rock Stadium',co:'us'},{id:'NYC',city:'New York / NJ',stad:'MetLife Stadium',co:'us'}];
-const DD=[null];for(let d=new Date(2026,5,11);d<=new Date(2026,6,19);d.setDate(d.getDate()+1))DD.push(new Date(d));DD.push(null);
+const ddEnd=offset>=9?new Date(2026,6,20):new Date(2026,6,19);
+const DD=[null];for(let d=new Date(2026,5,11);d<=ddEnd;d.setDate(d.getDate()+1))DD.push(new Date(d));DD.push(null);
 const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const ISO={MEX:'mx',RSA:'za',KOR:'kr',CZE:'cz',CAN:'ca',BIH:'ba',QAT:'qa',SUI:'ch',BRA:'br',MAR:'ma',HAI:'ht',SCO:'gb-sct',USA:'us',PAR:'py',AUS:'au',TUR:'tr',GER:'de',CUR:'cw',CIV:'ci',ECU:'ec',NED:'nl',JPN:'jp',SWE:'se',TUN:'tn',ESP:'es',CPV:'cv',KSA:'sa',URU:'uy',BEL:'be',EGY:'eg',IRN:'ir',NZL:'nz',FRA:'fr',SEN:'sn',IRQ:'iq',NOR:'no',ARG:'ar',ALG:'dz',AUT:'at',JOR:'jo',POR:'pt',COD:'cd',UZB:'uz',COL:'co',ENG:'gb-eng',CRO:'hr',GHA:'gh',PAN:'pa'};
 const fU=c=>`https://flagcdn.com/w160/${ISO[c]||'xx'}.png`;
@@ -282,8 +284,9 @@ const mL={};M.forEach(m=>{const k=m[6]+'_'+m[1];if(!mL[k])mL[k]=[];mL[k].push(m)
 const mDays=new Set();M.forEach(m=>mDays.add(m[1]));
 const VW=263,GW=3300-VW,grpH=514;
 let tW=0;
+const gsStartDay=offset>=9?12:11;
 const gsEndDay=offset>=14?30:offset>=4?29:27;// Widen June 28-29 for shifted timezones
-const dWts=DD.map(d=>{if(!d)return(tW+=2.2,2.2);const dn=d.getDate(),mo=d.getMonth();if(mo===5&&dn>=11&&dn<=gsEndDay)return(tW+=4,4);return(tW+=1.8,1.8)});
+const dWts=DD.map(d=>{if(!d)return(tW+=2.2,2.2);const dn=d.getDate(),mo=d.getMonth();if(mo===5&&dn>=gsStartDay&&dn<=gsEndDay)return(tW+=4,4);return(tW+=1.8,1.8)});
 const dW=dWts.map(w=>Math.round(w*GW/tW));
 const moH=26,hdrH=71,stgH=40;
 const gridH=2512-109-moH-hdrH-stgH-grpH;
@@ -332,7 +335,7 @@ if(needsSplit){
   const r16Start=offset>=4?colMid(6,4):dateRange(6,4,6,4)[0];
   const qEnd=offset>=8?dateRange(6,12,6,12)[1]:dateRange(6,11,6,11)[1];
   stgData=[
-    [dateRange(5,11,5,27)[0],gsEnd,'GROUP STAGE'],
+    [dateRange(5,gsStartDay,5,27)[0],gsEnd,'GROUP STAGE'],
     [r32Start,r32End,'ROUND OF 32'],
     [r16Start,dateRange(6,7,6,7)[1],'ROUND OF 16'],
     [dateRange(6,9,6,9)[0],qEnd,'QUARTERS'],
@@ -340,7 +343,7 @@ if(needsSplit){
     [dateRange(6,18,6,19)[0],dateRange(6,19,6,19)[1],'FINALS']
   ];
 }else{
-  stgData=[[5,11,5,27,'GROUP STAGE'],[5,28,6,3,'ROUND OF 32'],[6,4,6,7,'ROUND OF 16'],[6,9,6,11,'QUARTERS'],[6,14,6,15,'SEMIS'],[6,18,6,19,'FINALS']].map(([m1,d1,m2,d2,lbl])=>{const[s,e]=dateRange(m1,d1,m2,d2);return[s,e,lbl]});
+  stgData=[[5,gsStartDay,5,27,'GROUP STAGE'],[5,28,6,3,'ROUND OF 32'],[6,4,6,7,'ROUND OF 16'],[6,9,6,11,'QUARTERS'],[6,14,6,15,'SEMIS'],[6,18,6,19,'FINALS']].map(([m1,d1,m2,d2,lbl])=>{const[s,e]=dateRange(m1,d1,m2,d2);return[s,e,lbl]});
 }
 stgData.forEach(([s,e,lbl])=>{const w=e-s;stg+=`<div class="stage-label-abs" style="left:${s-(w<250?8:0)}px;width:${w+(w<250?16:0)}px">${lbl}</div>`});
 // OFF days (adjust for timezone)
@@ -501,7 +504,8 @@ ga.appendChild(tDiv);
 
 
 const gA=document.getElementById('groups-area');
-const grpTitle=dateFmt==='uk'?'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 11\u201327 June 2026':'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 June 11\u201327, 2026';
+const gsFirstDay=offset>=9?12:11;const gsLastDay=offset>=5?28:27;
+const grpTitle=dateFmt==='uk'?'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 '+gsFirstDay+'\u201328 June 2026':'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 June '+gsFirstDay+'\u201327, 2026';
 let gH='<div class="groups-title">'+grpTitle+'</div><div class="groups-grid">';
 Object.keys(GROUPS).forEach(g=>{
   gH+='<div class="grp-box"><div class="grp-hdr">GROUP '+g+'</div>';
