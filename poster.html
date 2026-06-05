@@ -276,7 +276,10 @@ if(offset!==0){
 }
 // Apply TV channel changes
 if(tvMode==='uk'){
-  M.forEach(m=>{if(UK_TV[m[0]])m[7]=UK_TV[m[0]]});
+  M.forEach(m=>{
+    if(UK_TV[m[0]])m[7]=UK_TV[m[0]];
+    else if(m[0]>72)m[7]='';// KO stage BBC/ITV TBC
+  });
 }else if(tvMode==='none'){
   M.forEach(m=>{m[7]=''});
 }
