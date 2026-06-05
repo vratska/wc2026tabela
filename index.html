@@ -191,8 +191,7 @@ function update() {
     info.textContent = 'UK broadcast channels (group stage confirmed, knockout TBC). Dates in DD/MM format.';
   } else {
     tvTag.textContent = 'Times only';
-    const usDateZones = ['UTC-11','UTC-10','UTC-9','UTC-8','UTC-7'];
-    fmtTag.textContent = usDateZones.includes(p.tz) ? 'MM/DD' : 'DD/MM';
+    fmtTag.textContent = 'DD/MM';
     info.textContent = 'Times only, no TV channel info. Dates in ' + fmtTag.textContent + ' format.';
   }
   
