@@ -347,16 +347,12 @@ document.querySelector('style').textContent+=`
 .grp-team .nm{font-size:${SZ.grpNmF}px!important}
 .title-bar{padding-left:${SZ.titlePL}px!important}
 `;
-// Auto-fit to browser viewport width
+// Auto-fit to browser viewport on initial load only
 (function(){
-  const scale = window.innerWidth / SZ.w;
+  const scale = document.documentElement.clientWidth / SZ.w * 0.99;
   if (scale < 1) {
     document.body.style.zoom = scale;
   }
-  window.addEventListener('resize', function(){
-    const s = window.innerWidth / SZ.w;
-    document.body.style.zoom = s < 1 ? s : 1;
-  });
 })();
 
 let tW=0;
