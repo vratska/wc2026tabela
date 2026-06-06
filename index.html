@@ -164,6 +164,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 </div>
 
 <script>
+let _prevTZ = '';
+
 function getParams() {
   return {
     theme: document.getElementById('sel-theme').value,
@@ -181,11 +183,9 @@ function update() {
   const p = getParams();
   const url = buildURL(p);
   
-  // Update buttons
   document.getElementById('btn-open').href = url;
-  document.getElementById('btn-download').href = `poster.html`;
+  document.getElementById('btn-download').href = 'poster.html';
   
-  // Update info bar
   const tvTag = document.getElementById('tag-tv');
   const fmtTag = document.getElementById('tag-fmt');
   const info = document.getElementById('info-text');
@@ -200,8 +200,6 @@ function update() {
   } else if (p.tz === 'BST') {
     tvTag.textContent = 'BBC / ITV';
     fmtTag.textContent = 'DD/MM';
-    document.getElementById('clock-toggle').style.display='block';
-    if(p.tz!==_prevTZ)document.getElementById('sel-clock').value='24';
     document.getElementById('clock-toggle').style.display='none';
     document.getElementById('sel-clock').value='12';
     info.textContent = 'UK broadcast channels (group stage confirmed, knockout TBC). Dates in DD/MM format.';
@@ -209,22 +207,19 @@ function update() {
     tvTag.textContent = 'Times only';
     fmtTag.textContent = 'DD/MM';
     document.getElementById('clock-toggle').style.display='block';
-    if(p.tz!==_prevTZ)document.getElementById('sel-clock').value='24';
+    if (p.tz !== _prevTZ) document.getElementById('sel-clock').value='24';
     info.textContent = 'Dates in ' + fmtTag.textContent + ' format. Print on landscape, scale to fit, enable background graphics.';
   }
   
-  // Update preview iframe
   const iframe = document.getElementById('preview');
   const overlay = document.getElementById('overlay');
   overlay.classList.remove('hidden');
-  overlay.textContent = 'Loading preview…';
+  overlay.textContent = 'Loading preview\u2026';
   iframe.src = url;
   scalePreview();
   updatePrintInstructions();
-  _prevTZ=p.tz;
-  iframe.onload = () => {
-    overlay.classList.add('hidden');
-  };
+  _prevTZ = p.tz;
+  iframe.onload = () => { overlay.classList.add('hidden'); };
 }
 
 function updatePrintInstructions() {
@@ -234,7 +229,7 @@ function updatePrintInstructions() {
   if (sz === '22x17') {
     el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cPrint / Save PDF\u201d and choose \u201cSave as PDF\u201d as your printer destination.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Set paper to <strong>Letter (8.5x11)</strong>, orientation <strong>Landscape</strong>, scale to <strong>Fit</strong>, and enable <strong>Background graphics</strong>.</p><p><strong>Print shop:</strong> Download the HTML for large format printing at full 22x17 size.</p>';
   } else {
-    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cPrint / Save PDF\u201d and choose \u201cSave as PDF\u201d as your printer destination.</p><p><strong>Print shop recommended:</strong> Download the HTML and bring it to a print shop for full-size ' + sz.replace('x', '×') + ' output.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Scale to fit, landscape, enable Background graphics.</p>';
+    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cPrint / Save PDF\u201d and choose \u201cSave as PDF\u201d as your printer destination.</p><p><strong>Print shop recommended:</strong> Download the HTML and bring it to a print shop for full-size ' + sz.replace('x','\u00d7') + ' output.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Scale to fit, landscape, enable Background graphics.</p>';
   }
 }
 
@@ -244,7 +239,6 @@ function printPoster() {
   w.addEventListener('load', () => setTimeout(() => w.print(), 1500));
 }
 
-// Auto-detect timezone
 function scalePreview() {
   const box = document.querySelector('.preview-box');
   const iframe = document.getElementById('preview');
@@ -260,7 +254,6 @@ function scalePreview() {
 }
 window.addEventListener('resize', scalePreview);
 
-function 
 function generatePDF() {
   const btn = document.getElementById('btn-pdf');
   const origText = btn.textContent;
@@ -276,66 +269,44 @@ function generatePDF() {
   };
   const d = dims[p.size] || dims['22x17'];
   
-  // Create hidden iframe
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:'+d.w+'px;height:'+d.h+'px;border:none;';
-  document.body.appendChild(iframe);
+  const iframe2 = document.createElement('iframe');
+  iframe2.style.cssText = 'position:fixed;left:-99999px;top:0;width:'+d.w+'px;height:'+d.h+'px;border:none;';
+  document.body.appendChild(iframe2);
   
-  // Build URL without zoom (add nozoom param)
   const url = buildURL(p) + '&nozoom=1';
-  iframe.src = url;
+  iframe2.src = url;
   
-  iframe.onload = function() {
-    // Wait for fonts and images to load
+  iframe2.onload = function() {
     setTimeout(function() {
-      const body = iframe.contentDocument.body;
-      
+      const body = iframe2.contentDocument.body;
       html2canvas(body, {
-        width: d.w,
-        height: d.h,
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        logging: false
+        width: d.w, height: d.h, scale: 2,
+        useCORS: true, allowTaint: false, logging: false
       }).then(function(canvas) {
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: d.unit,
-          format: [d.pw, d.ph]
-        });
-        
+        const pdf = new jsPDF({ orientation:'landscape', unit:d.unit, format:[d.pw, d.ph] });
         pdf.addImage(imgData, 'JPEG', 0, 0, d.pw, d.ph);
-        
         const tzLabel = p.tz.replace(/[+:]/g, '').replace('-', 'm');
         pdf.save('wc2026_' + d.label + '_' + tzLabel + '_' + p.theme + '.pdf');
-        
-        // Cleanup
-        document.body.removeChild(iframe);
-        btn.textContent = origText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
+        document.body.removeChild(iframe2);
+        btn.textContent = origText; btn.disabled = false; btn.style.opacity = '1';
       }).catch(function(err) {
         console.error('PDF generation failed:', err);
-        document.body.removeChild(iframe);
-        btn.textContent = origText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
+        document.body.removeChild(iframe2);
+        btn.textContent = origText; btn.disabled = false; btn.style.opacity = '1';
         alert('PDF generation failed. Try using Print / Save PDF instead.');
       });
-    }, 3000); // wait for flags/fonts
+    }, 3000);
   };
 }
 
-autoDetectTZ() {
-  const offMin = -new Date().getTimezoneOffset(); // UTC offset in minutes
-  // Try featured zones first (with TV)
+function autoDetectTZ() {
+  const offMin = -new Date().getTimezoneOffset();
   const featured = {'-240':'ET','-300':'CT','-360':'MT','-420':'PT','60':'BST'};
   let detected = featured[String(offMin)];
   if (!detected) {
-    // Map to nearest UTC offset
-    const offH = Math.round(offMin / 30) * 0.5; // round to nearest half hour
+    const offH = Math.round(offMin / 30) * 0.5;
     if (offH === Math.floor(offH)) detected = 'UTC' + (offH >= 0 ? '+' : '') + offH;
     else detected = 'UTC' + (offH >= 0 ? '+' : '') + Math.floor(offH) + ':30';
   }
@@ -345,75 +316,6 @@ autoDetectTZ() {
       if (sel.options[i].value === detected) { sel.selectedIndex = i; break; }
     }
   }
-}
-
-let _prevTZ = '';
-
-function generatePDF() {
-  const btn = document.getElementById('btn-pdf');
-  const origText = btn.textContent;
-  btn.textContent = '\u23f3 Generating PDF...';
-  btn.disabled = true;
-  btn.style.opacity = '0.6';
-  
-  const p = getParams();
-  const dims = {
-    '22x17': {w:3300, h:2512, pw:22, ph:17, unit:'in', label:'22x17'},
-    'A3':    {w:3552, h:2512, pw:420, ph:297, unit:'mm', label:'A3'},
-    '24x16': {w:3768, h:2512, pw:24, ph:16, unit:'in', label:'24x16'}
-  };
-  const d = dims[p.size] || dims['22x17'];
-  
-  // Create hidden iframe
-  const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:'+d.w+'px;height:'+d.h+'px;border:none;';
-  document.body.appendChild(iframe);
-  
-  // Build URL without zoom (add nozoom param)
-  const url = buildURL(p) + '&nozoom=1';
-  iframe.src = url;
-  
-  iframe.onload = function() {
-    // Wait for fonts and images to load
-    setTimeout(function() {
-      const body = iframe.contentDocument.body;
-      
-      html2canvas(body, {
-        width: d.w,
-        height: d.h,
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        logging: false
-      }).then(function(canvas) {
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: d.unit,
-          format: [d.pw, d.ph]
-        });
-        
-        pdf.addImage(imgData, 'JPEG', 0, 0, d.pw, d.ph);
-        
-        const tzLabel = p.tz.replace(/[+:]/g, '').replace('-', 'm');
-        pdf.save('wc2026_' + d.label + '_' + tzLabel + '_' + p.theme + '.pdf');
-        
-        // Cleanup
-        document.body.removeChild(iframe);
-        btn.textContent = origText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
-      }).catch(function(err) {
-        console.error('PDF generation failed:', err);
-        document.body.removeChild(iframe);
-        btn.textContent = origText;
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        alert('PDF generation failed. Try using Print / Save PDF instead.');
-      });
-    }, 3000); // wait for flags/fonts
-  };
 }
 
 autoDetectTZ();
