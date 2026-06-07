@@ -13,7 +13,7 @@
   .title-bar .dates{font-size:66px;font-weight:700;color:#eef;margin-left:20px;letter-spacing:2px;line-height:1}
   .title-info{position:absolute;right:30px;bottom:3px;text-align:right;font-size:23px;color:#8899aa;line-height:1.35}
   .venue-col{position:absolute;top:109px;left:0;z-index:3}
-  .v-label{display:flex;flex-direction:column;justify-content:center;padding:18px 8px 3px 12px;border-bottom:1px solid rgba(255,255,255,0.04);border-right:2px solid #c9a830}
+  .v-label{display:flex;flex-direction:column;justify-content:center;padding:18px 8px 3px 12px;border-bottom:1px solid rgba(255,255,255,0.04);border-right:2px solid ${P.vColor}}
   .v-label.v-us{background-color:#0f1a38;border-left:4px solid #4a90d9}
   .v-label.v-mx{background-color:#0c1e12;border-left:4px solid #2ecc71}
   .v-label.v-ca{background-color:#1e0c0b;border-left:4px solid #e74c3c}
@@ -248,10 +248,31 @@ body{background-color:${P.bodyBg}!important;color:${P.textMain}!important}
 .mc-team-left,.mc-team-right{color:${P.textMain}!important}
 .mc-tv{color:${P.textGold}!important}
 .mc-grp{color:${P.textGold}!important}
+.mc-grp-top{color:${P.textGold}!important}
 .mc-time{color:${P.textDim}!important}
 #groups-area{background-color:${P.groupsBg}!important;border-top-color:${P.vColor}!important}
 .grp-box{background-color:${P.groupBox}!important;border-color:${P.groupBoxBorder}!important}
 .grp-hdr{color:${P.textGold}!important}
+.mc-ko-num{color:${P.koNum}!important}
+.mc-ko-feeder{color:${P.koFeeder}!important}
+.mc-ko-round{color:${P.textGold}!important}
+.mc-ko-time{color:${P.textDim}!important}
+.mc-num{color:${P.textDimmer}!important}
+.mc-time{color:${P.textDim}!important}
+.grp-team .ab{color:${P.grpTeamCode}!important}
+.grp-team .nm,.grp-team-name{color:${P.grpTeamName}!important}
+.gm-mn{color:${P.gmMn}!important}
+.gm-dt{color:${P.gmDt}!important}
+.gm-ti{color:${P.gmTi}!important}
+.st-hdr{color:${P.textDim}!important}
+.grp-hdr{border-bottom-color:${P.groupBoxBorder}!important}
+.grp-code{color:${P.grpTeamCode}!important}
+.grp-standings-hdr{color:${P.textDim}!important}
+
+.v-label.v-us{background-color:${P.venueUS}!important}
+.v-label.v-mx{background-color:${P.venueMX}!important}
+.v-label.v-ca{background-color:${P.venueCA}!important}
+.v-label{border-right-color:${P.vColor}!important;border-bottom-color:${P.cellGridline}!important}
 `;
 
 
@@ -452,7 +473,7 @@ offDays.forEach(([mo2,dy])=>{const[s,e]=dateRange(mo2,dy,mo2,dy);if(e>s)stg+=`<d
 stg+='</div>';
 
 const topH=moH+hdrH+stgH;
-let vcH=`<div style="height:${topH}px;border-bottom:2px solid #1a1e40;border-right:2px solid #c9a830;border-left:4px solid #c9a830;background-color:#111630;display:flex;align-items:center;justify-content:center;padding:27px 20px 4px 4px;font-size:26px;font-weight:700;color:#eef;letter-spacing:1px;text-align:center;line-height:1.2">MATCH<br>LOCATIONS</div>`;
+let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 20px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">MATCH<br>LOCATIONS</div>`;
 V.forEach(v=>{vcH+=`<div class="v-label v-${v.co}" style="height:${rowH}px"><div class="v-city">${v.city}</div><div class="v-stad">${v.stad}</div></div>`});
 vc.innerHTML=vcH;
 
@@ -584,8 +605,8 @@ brSvg.setAttribute('viewBox',`0 -7 ${bSeedR+40} ${bMaxY+7}`);
 const bgRect=document.createElementNS('http://www.w3.org/2000/svg','rect');
 bgRect.setAttribute('x','5');bgRect.setAttribute('y','-7');
 bgRect.setAttribute('width',bSeedR+35);bgRect.setAttribute('height',bMaxY+4);
-bgRect.setAttribute('rx','6');bgRect.setAttribute('fill','rgba(12,14,30,0.55)');
-bgRect.setAttribute('stroke','rgba(255,255,255,0.15)');bgRect.setAttribute('stroke-width','2.5');
+bgRect.setAttribute('rx','6');bgRect.setAttribute('fill',P.bracketBg);
+bgRect.setAttribute('stroke',P.bracketBorder);bgRect.setAttribute('stroke-width','2.5');
 brSvg.insertBefore(bgRect,brSvg.firstChild);
 // Position: bottom-left 15px above match 97 at Boston (row 9)
 const bosRow=9;
