@@ -254,21 +254,7 @@ body{background-color:${P.bodyBg}!important;color:${P.textMain}!important}
 .grp-hdr{color:${P.textGold}!important}
 `;
 
-function fmt24(t){
-  if(CLOCK!=='24')return t;
-  let h,mi=0;
-  if(t==='12a'){h=0}
-  else if(t.endsWith('a')){
-    if(t.includes(':')){const p=t.replace(/a$/,'').split(':');h=parseInt(p[0]);mi=parseInt(p[1]);if(h===12)h=0}
-    else{h=parseInt(t);if(h===12)h=0}
-  }else if(t.endsWith('p')){
-    if(t.includes(':')){const p=t.replace(/p$/,'').split(':');h=parseInt(p[0]);mi=parseInt(p[1]);if(h!==12)h+=12}
-    else{h=parseInt(t);if(h!==12)h+=12}
-  }else if(t.includes(':')){
-    const p=t.split(':');h=parseInt(p[0]);mi=parseInt(p[1]);if(h!==12)h+=12
-  }else return t;
-  return h+':'+String(mi).padStart(2,'0');
-}
+
 function fmtDt(d){return dateFmt==='uk'?d.split('/').reverse().join('/'):d}
 const V=[{id:'VAN',city:'Vancouver',stad:'BC Place',co:'ca'},{id:'TOR',city:'Toronto',stad:'BMO Field',co:'ca'},{id:'MEX',city:'Mexico City',stad:'Estadio Azteca',co:'mx'},{id:'MTY',city:'Monterrey',stad:'Estadio BBVA',co:'mx'},{id:'GDL',city:'Guadalajara',stad:'Estadio Akron',co:'mx'},{id:'SFO',city:'San Francisco',stad:"Levi's Stadium",co:'us'},{id:'HOU',city:'Houston',stad:'NRG Stadium',co:'us'},{id:'PHI',city:'Philadelphia',stad:'Lincoln Financial Field',co:'us'},{id:'SEA',city:'Seattle',stad:'Lumen Field',co:'us'},{id:'BOS',city:'Boston',stad:'Gillette Stadium',co:'us'},{id:'KCM',city:'Kansas City',stad:'Arrowhead Stadium',co:'us'},{id:'LAX',city:'Los Angeles',stad:'SoFi Stadium',co:'us'},{id:'DAL',city:'Dallas',stad:'AT&T Stadium',co:'us'},{id:'ATL',city:'Atlanta',stad:'Mercedes-Benz Stadium',co:'us'},{id:'MIA',city:'Miami',stad:'Hard Rock Stadium',co:'us'},{id:'NYC',city:'New York / NJ',stad:'MetLife Stadium',co:'us'}];
 // Dynamic date range based on timezone offset
@@ -376,7 +362,7 @@ const moH=26,hdrH=71,stgH=40;
 const gridH=5652-109-moH-hdrH-stgH-grpH;
 const rowH=Math.floor(gridH/V.length);
 
-function isEv(d){return d?d.getDate()%2===0:true}
+function isEv(d,di){if(d)return d.getDate()%2===0;if(di<=0)return DD[1]?(DD[1].getDate()-1)%2===0:false;return DD[di-1]?(DD[di-1].getDate()+1)%2===0:false}
 // Solid colors (pre-blended on body bg #0e1025)
 function cellBg(co,ev){
   if(co==='us')return ev?P.strUS[0]:P.strUS[1];
@@ -475,7 +461,7 @@ V.forEach(v=>{
 
   gh+=`<div class="g-row" style="height:${rowH}px">`;
   DD.forEach((d,di)=>{
-    const ev=isEv(d);const bg=cellBg(v.co,ev);
+    const ev=isEv(d,di);const bg=cellBg(v.co,ev);
     if(!d){gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}"></div>`;return}
     const k=(d.getMonth()+1)+'/'+d.getDate();const lk=v.id+'_'+k;const ms=mL[lk];
     gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}">`;
@@ -489,7 +475,7 @@ V.forEach(v=>{
         else{oP=38;wP=176;}
         const flankW=(oP/wP*100).toFixed(1)+'%';
         const edgeL=flankW,edgeR=((oP+100)/wP*100).toFixed(1)+'%';
-        const tD=time;
+        const tD=fmt24((time.includes(':')&&chan)?time.replace(/[ap]$/,''):time);
         const flanks=`<div class="mc-flank mc-flank-l" style="width:${flankW}"></div><div class="mc-flank mc-flank-r" style="width:${flankW}"></div>`;
         let inner=flanks;
         if(isKO){
@@ -551,22 +537,22 @@ function buildBH(seeds,matches,x0,y0,dir,sfBias){
   }
   let x=x0;
   for(let i=0;i<seeds.length;i++){
-    if(dir===1){bTxt(x-2,sYs[i],seeds[i],18,bGC,'end');bLn(x,sYs[i],x+bLL,sYs[i]);}
-    else{bTxt(x+2,sYs[i],seeds[i],18,bGC,'start');bLn(x-bLL,sYs[i],x,sYs[i]);}
+    if(dir===1){bTxt(x-2,sYs[i],seeds[i],20,bGC,'end');bLn(x,sYs[i],x+bLL,sYs[i]);}
+    else{bTxt(x+2,sYs[i],seeds[i],20,bGC,'start');bLn(x-bLL,sYs[i],x,sYs[i]);}
   }
   x+=dir*bLL;
   const r32=[];
-  for(let i=0;i<seeds.length;i+=2){const m=(sYs[i]+sYs[i+1])/2;r32.push(m);bLn(x,sYs[i],x,sYs[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[0][i/2],16,bTC,dir===1?'end':'start');}
+  for(let i=0;i<seeds.length;i+=2){const m=(sYs[i]+sYs[i+1])/2;r32.push(m);bLn(x,sYs[i],x,sYs[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[0][i/2],18,bTC,dir===1?'end':'start');}
   x+=dir*bLL;
   const r16=[];
-  for(let i=0;i<r32.length;i+=2){const m=(r32[i]+r32[i+1])/2;r16.push(m);bLn(x,r32[i],x,r32[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[1][i/2],16,bTC,dir===1?'end':'start');}
+  for(let i=0;i<r32.length;i+=2){const m=(r32[i]+r32[i+1])/2;r16.push(m);bLn(x,r32[i],x,r32[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[1][i/2],18,bTC,dir===1?'end':'start');}
   x+=dir*bLL;
   const qf=[];
-  for(let i=0;i<r16.length;i+=2){const m=(r16[i]+r16[i+1])/2;qf.push(m);bLn(x,r16[i],x,r16[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[2][i/2],16,bTC,dir===1?'end':'start');}
+  for(let i=0;i<r16.length;i+=2){const m=(r16[i]+r16[i+1])/2;qf.push(m);bLn(x,r16[i],x,r16[i+1]);bLn(x,m,x+dir*bLL,m);bTxt(x-dir*11,m,'#'+matches[2][i/2],18,bTC,dir===1?'end':'start');}
   x+=dir*bLL;
   const sfMid=(qf[0]+qf[1])/2;const sfOut=qf[0]+(qf[1]-qf[0])*sfBias;
   bLn(x,qf[0],x,qf[1]);bLn(x,sfOut,x+dir*bLL*1.2,sfOut);
-  bTxt(x-dir*11,sfMid,'#'+matches[3][0],16,bTC,dir===1?'end':'start');
+  bTxt(x-dir*11,sfMid,'#'+matches[3][0],18,bTC,dir===1?'end':'start');
   x+=dir*bLL*1.2;
   return{sfY:sfOut,sfX:x,botY:sYs[sYs.length-1]};
 }
@@ -582,17 +568,17 @@ const bRight=buildBH(bRS,bRM,bSeedR,34,-1,0.75);
 
 const bFinX=(bLeft.sfX+bRight.sfX)/2;
 const bFinY=(bLeft.sfY+bRight.sfY)/2;
-bTxt(bFinX,bFinY-12,'FINAL',20,bGC,'middle');
-bTxt(bFinX,bFinY+10,'Match',16,'#fff','middle');bTxt(bFinX,bFinY+24,'#104',15,'#fff','middle');
-bTxt(bFinX,bFinY+42,'3rd · #103',14,'#778','middle');
+bTxt(bFinX,bFinY-12,'FINAL',22,bGC,'middle');
+bTxt(bFinX,bFinY+10,'Match',18,'#fff','middle');bTxt(bFinX,bFinY+24,'#104',17,'#fff','middle');
+bTxt(bFinX,bFinY+42,'3rd · #103',16,'#778','middle');
 
 // Add title
-bTxt(bSeedR/2+bSeedL/2,18,'KNOCKOUT STAGE',26,bGC,'middle');
+bTxt(bSeedR/2+bSeedL/2,18,'KNOCKOUT STAGE',28,bGC,'middle');
 
 const bMaxY=bLeft.botY+35;
 brSvg.setAttribute('width',bSeedR+40);
 brSvg.setAttribute('height',bMaxY+7);
-brSvg.style.transform='scale(1.15)';brSvg.style.transformOrigin='top left';
+brSvg.style.transform='scale(1.265)';brSvg.style.transformOrigin='top left';
 brSvg.setAttribute('viewBox',`0 -7 ${bSeedR+40} ${bMaxY+7}`);
 // Background rect with border
 const bgRect=document.createElementNS('http://www.w3.org/2000/svg','rect');
@@ -612,7 +598,7 @@ ga.appendChild(brSvg);
 // Trophy emoji as HTML div
 const tDiv=document.createElement('div');
 tDiv.innerHTML='&#x1F3C6;';
-tDiv.style.cssText='position:absolute;top:'+(bracketTop+bFinY-44)+'px;left:'+(bracketLeft+bFinX-15)+'px;width:30px;font-size:25px;text-align:center;z-index:6;pointer-events:none';
+tDiv.style.cssText='position:absolute;top:'+(bracketTop+bFinY-52)+'px;left:'+(bracketLeft+bFinX-15)+'px;width:30px;font-size:25px;text-align:center;z-index:6;pointer-events:none';
 ga.appendChild(tDiv);
 
 
@@ -624,7 +610,7 @@ Object.keys(GROUPS).forEach(g=>{
   gH+='<div class="grp-standings-hdr"><span></span><span>W</span><span>D</span><span>L</span><span>GF</span><span>GA</span><span>Pts</span></div>';
   GROUPS[g].forEach(([iso,ab,nm])=>{gH+=`<div class="grp-team-block"><div class="grp-team-name">${nm}</div><div class="grp-team-data"><div class="grp-flag-code"><div class="grp-flag-box"><img class="fl" src="https://flagcdn.com/w80/${iso}.png" alt="${ab}"></div><span class="grp-code">${ab}</span></div><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell st-pts"></span></div></div>`});
   gH+='<div class="grp-matches">';
-  GM[g].forEach(s=>{const p=s.split(' ');const tD=p[4];
+  GM[g].forEach(s=>{const p=s.split(' ');const tD=fmt24((p[4].includes(':')&&p[5])?p[4].replace(/[ap]$/,''):p[4]);
     gH+=`<div class="gm-row"><span class="gm-mn">#${p[0]}</span><span class="gm-dt">${p[1]}</span><span class="gm-t1">${p[2]}</span><span class="gm-score"><span style="display:inline-block;width:53px;height:60px;border:1.5px solid rgba(200,210,230,0.9);border-radius:3px;background:rgba(245,248,255,0.9)"></span><span style="color:#556;font-size:24px;margin:0 2px">-</span><span style="display:inline-block;width:53px;height:60px;border:1.5px solid rgba(200,210,230,0.9);border-radius:3px;background:rgba(245,248,255,0.9)"></span></span><span class="gm-t2">${p[3]}</span><span class="gm-ti">${tD}${p[5]?'·'+p[5]:''}</span></div>`});
   gH+='</div></div>';
 });

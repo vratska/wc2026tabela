@@ -93,7 +93,7 @@ const TZ_OFF={
   'UTC-11':-7,'UTC-10':-6,'UTC-9':-5,'UTC-8':-4,'UTC-7':-3,'UTC-6':-2,'UTC-5':-1,
   'UTC-4':0,'UTC-3':1,'UTC-2':2,'UTC-1':3,'UTC+0':4,
   'UTC+1':5,'UTC+2':6,'UTC+3':7,'UTC+4':8,'UTC+5':9,'UTC+5:30':9.5,
-  'UTC+6':10,'UTC+7':11,'UTC+8':12,'UTC+9':13,'UTC+10':14,'UTC+11':15,'UTC+12':16,'UTC+13':17
+  'UTC+6':10,'UTC+7':11,'UTC+8':12,'UTC+9':13,'UTC+10':14,'UTC+11':15,'UTC+12':16,'UTC+13':17,NZST:16,AEST:14
 };
 const TZ_NAME={
   ET:'Eastern US (ET)',CT:'Central US (CT)',MT:'Mountain US (MT)',PT:'Pacific US (PT)',BST:'UK (BST)',
@@ -108,7 +108,7 @@ const TZ_NAME={
   'UTC+7':'UTC+7 (Thailand, Vietnam)','UTC+8':'UTC+8 (China, Singapore)',
   'UTC+9':'UTC+9 (Japan, Korea)','UTC+10':'UTC+10 (Australia East)',
   'UTC+11':'UTC+11 (Solomon Is.)','UTC+12':'UTC+12 (New Zealand, Fiji)',
-  'UTC+13':'UTC+13 (Tonga)'
+  'UTC+13':'UTC+13 (Tonga)',NZST:'New Zealand (NZST)',AEST:'Australia Eastern (AEST)'
 };
 const TZ_TV_MODE={
   ET:'us',CT:'us',MT:'us',PT:'us',BST:'uk',
@@ -116,13 +116,13 @@ const TZ_TV_MODE={
   'UTC-5':'none','UTC-4':'none','UTC-3':'none','UTC-2':'none','UTC-1':'none','UTC+0':'none',
   'UTC+1':'none','UTC+2':'none','UTC+3':'none','UTC+4':'none','UTC+5':'none','UTC+5:30':'none',
   'UTC+6':'none','UTC+7':'none','UTC+8':'none','UTC+9':'none','UTC+10':'none','UTC+11':'none',
-  'UTC+12':'none','UTC+13':'none'
+  'UTC+12':'none','UTC+13':'none',NZST:'none',AEST:'none'
 };
 const TZ_DATE_FMT={ET:'us',CT:'us',MT:'us',PT:'us'};
 // Everyone except the US uses DD/MM — default to 'uk' for all others
 const dateFmtDefault='uk';
 const SIZE=params.get('size')||'22x17';
-const CLOCK=params.get('clock')||'12';
+const CLOCK=params.get('clock')||(TZ_TV_MODE[TZ]==='none'?'24':'12');
 const offset=TZ_OFF[TZ]||0;
 const tvMode=TZ_TV_MODE[TZ]||'us';
 const dateFmt=TZ_DATE_FMT[TZ]||dateFmtDefault;
@@ -389,7 +389,7 @@ const moH=26,hdrH=71,stgH=40;
 const gridH=2512-109-moH-hdrH-stgH-grpH;
 const rowH=Math.floor(gridH/V.length);
 
-function isEv(d){return d?d.getDate()%2===0:true}
+function isEv(d,di){if(d)return d.getDate()%2===0;if(di<=0)return DD[1]?(DD[1].getDate()-1)%2===0:false;return DD[di-1]?(DD[di-1].getDate()+1)%2===0:false}
 // Solid colors (pre-blended on body bg #1a1e3a)
 function cellBg(co,ev){
   if(co==='us')return ev?P.strUS[0]:P.strUS[1];
@@ -487,7 +487,7 @@ V.forEach(v=>{
 
   gh+=`<div class="g-row" style="height:${rowH}px">`;
   DD.forEach((d,di)=>{
-    const ev=isEv(d);const bg=cellBg(v.co,ev);
+    const ev=isEv(d,di);const bg=cellBg(v.co,ev);
     if(!d){gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}"></div>`;return}
     const k=(d.getMonth()+1)+'/'+d.getDate();const lk=v.id+'_'+k;const ms=mL[lk];
     gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}">`;
