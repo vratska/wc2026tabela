@@ -138,7 +138,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
 <div class="actions">
   <a class="btn btn-gold" id="btn-open" href="#" target="_blank">↗ Open Poster</a>
-  <button class="btn btn-outline" id="btn-print" onclick="printPoster()">🖨 Print / Save PDF</button>
+  <button class="btn btn-outline" id="btn-print" onclick="printPoster()">🖨 Print</button>
   <button class="btn btn-outline" id="btn-pdf" onclick="downloadPDF()">📥 Download PDF</button>
   <a class="btn btn-outline" id="btn-download" href="#" download>📄 Download HTML</a>
 </div>
@@ -152,7 +152,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 </div>
 
 <div class="how-to">
-  <h2>Print & Save as PDF</h2>
+  <h2>Printing Tips</h2>
   <div id="print-instructions"></div>
   <p><strong>Direct URL:</strong> Link directly to any variant: <code>poster.html?tz=BST&amp;theme=light</code></p></div>
 
@@ -226,9 +226,9 @@ function updatePrintInstructions() {
   const el = document.getElementById('print-instructions');
   if (!el) return;
   if (sz === '22x17') {
-    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cPrint / Save PDF\u201d and choose \u201cSave as PDF\u201d as your printer destination.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Set paper to <strong>Letter (8.5x11)</strong>, orientation <strong>Landscape</strong>, scale to <strong>Fit</strong>, and enable <strong>Background graphics</strong>.</p><p><strong>Print shop:</strong> Download the HTML for large format printing at full 22x17 size.</p>';
+    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cDownload PDF\u201d to generate a high-resolution PDF file directly.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Set paper to <strong>Letter (8.5x11)</strong>, orientation <strong>Landscape</strong>, scale to <strong>Fit</strong>, and enable <strong>Background graphics</strong>.</p><p><strong>Print shop:</strong> Download the HTML for large format printing at full 22x17 size.</p>';
   } else {
-    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cPrint / Save PDF\u201d and choose \u201cSave as PDF\u201d as your printer destination.</p><p><strong>Print shop recommended:</strong> Download the HTML and bring it to a print shop for full-size ' + sz.replace('x','\u00d7') + ' output.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Scale to fit, landscape, enable Background graphics.</p>';
+    el.innerHTML = '<p><strong>Save as PDF:</strong> Click \u201cDownload PDF\u201d to generate a high-resolution PDF file directly.</p><p><strong>Print shop recommended:</strong> Download the HTML and bring it to a print shop for full-size ' + sz.replace('x','\u00d7') + ' output.</p><p><strong>Home printer:</strong> Click "Open Poster", then Ctrl+P. Scale to fit, landscape, enable Background graphics.</p>';
   }
 }
 
