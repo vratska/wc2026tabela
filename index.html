@@ -51,7 +51,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .preview-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px}
 .preview-box{position:relative;width:100%;padding-top:0;background:var(--card);border-radius:0;border:1px solid var(--card-border);overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4)}
 .preview-box iframe{position:absolute;top:0;left:0;border:none;transform-origin:0 0;overflow:hidden}
-.preview-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-dim);pointer-events:none;background:rgba(10,12,24,0.7);transition:opacity 0.3s}
+.preview-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-dim);background:rgba(10,12,24,0.7);transition:opacity 0.3s;cursor:pointer;z-index:2}
 .preview-overlay.hidden{opacity:0}
 
 .how-to{max-width:880px;margin:0 auto 40px;padding:0 20px}
@@ -150,7 +150,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="preview-label">Live Preview</div>
   <div class="preview-box">
     <iframe id="preview" sandbox="allow-scripts" scrolling="no"></iframe>
-    <div class="preview-overlay" id="overlay">Loading preview…</div>
+    <div class="preview-overlay" id="overlay" onclick="window.open(buildURL(getParams()),'_blank')">Loading preview…</div>
   </div>
 </div>
 
