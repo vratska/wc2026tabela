@@ -104,6 +104,54 @@
 // ===== DYNAMIC CONFIGURATION =====
 const params=new URLSearchParams(window.location.search);
 const TZ=params.get('tz')||'ET';
+
+// ===== LANGUAGE SUPPORT =====
+const LANG=params.get('lang')||'en';
+const TR={
+  // Team names
+  teams:{
+    'Mexico':'México','South Africa':'Sudáfrica','S. Korea':'Corea del Sur','Czechia':'Chequia',
+    'Canada':'Canadá','Bosnia & Hz':'Bosnia y Hz','Qatar':'Catar','Switzerland':'Suiza',
+    'Brazil':'Brasil','Morocco':'Marruecos','Haiti':'Haití','Scotland':'Escocia',
+    'United States':'Estados Unidos','Paraguay':'Paraguay','Australia':'Australia','Türkiye':'Turquía',
+    'Germany':'Alemania','Curaçao':'Curazao','Ivory Coast':'Costa de Marfil','Ecuador':'Ecuador',
+    'Netherlands':'Países Bajos','Japan':'Japón','Sweden':'Suecia','Tunisia':'Túnez',
+    'Belgium':'Bélgica','Egypt':'Egipto','Iran':'Irán','New Zealand':'Nueva Zelanda',
+    'Spain':'España','Cape Verde':'Cabo Verde','Saudi Arabia':'Arabia Saudita','Uruguay':'Uruguay',
+    'France':'Francia','Senegal':'Senegal','Iraq':'Irak','Norway':'Noruega',
+    'Argentina':'Argentina','Algeria':'Argelia','Austria':'Austria','Jordan':'Jordania',
+    'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbekistán','Colombia':'Colombia',
+    'England':'Inglaterra','Croatia':'Croacia','Ghana':'Ghana','Panama':'Panamá'
+  },
+  // City names
+  cities:{
+    'Mexico City':'Ciudad de México','Philadelphia':'Filadelfia','Los Angeles':'Los Ángeles',
+    'New York / NJ':'Nueva York / NJ'
+  },
+  // Stage labels
+  stages:{'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'32AVOS','ROUND OF 16':'OCTAVOS',
+    'QUARTERS':'CUARTOS','SEMIS':'SEMIS','FINALS':'FINAL','3RD PLACE':'TERCER LUGAR'},
+  // KO cell labels
+  ko:{'ROUND OF 32':'DIECIS.','ROUND OF 16':'OCTAVOS','QUARTERFINAL':'CUARTOS','SEMIFINAL':'SEMIS','FINAL':'FINAL','3RD PLACE':'3ER LUGAR'},
+  // Days
+  days:{'SUN':'DOM','MON':'LUN','TUE':'MAR','WED':'MIÉ','THU':'JUE','FRI':'VIE','SAT':'SÁB'},
+  // Months
+  months:{'June':'Junio','July':'Julio'},
+  // UI
+  group:'GRUPO',knockout:'FASE ELIMINATORIA',champion:'CAMPEÓN',
+  matchLocations:'SEDES',allTimes:'Todos los horarios',
+  teams48:'48 Equipos',matches104:'104 Partidos',
+  // Title
+  title:'COPA MUNDIAL FIFA',hosts:'CANADÁ · MÉXICO · EE.UU.',
+  // Group table headers
+  W:'G',D:'E',L:'P',GF:'GF',GA:'GC',Pts:'Pts'
+};
+const showChan=LANG!=='es';
+function t_team(name){return LANG==='es'&&TR.teams[name]?TR.teams[name]:name}
+function t_city(name){return LANG==='es'&&TR.cities[name]?TR.cities[name]:name}
+function t_day(d){return LANG==='es'&&TR.days[d]?TR.days[d]:d}
+function t_stage(s){return LANG==='es'&&TR.stages[s]?TR.stages[s]:s}
+
 const THEME=params.get('theme')||'dark';
 const TZ_OFF={
   // Featured (with TV)
@@ -117,7 +165,7 @@ const TZ_OFF={
 const TZ_NAME={
   ET:'Eastern US (ET)',CT:'Central US (CT)',MT:'Mountain US (MT)',PT:'Pacific US (PT)',BST:'UK (BST)',
   'UTC-11':'UTC\u221211 (Samoa)','UTC-10':'UTC\u221210 (Hawaii)','UTC-9':'UTC\u22129 (Alaska)',
-  'UTC-8':'UTC\u22128','UTC-7':'UTC\u22127','UTC-6':'UTC\u22126 (Mexico City)',
+  'UTC-8':'UTC\u22128','UTC-7':'UTC\u22127','UTC-6':'UTC\u22126 '+(LANG==='es'?'(Ciudad de México)':'(Mexico City)'),
   'UTC-5':'UTC\u22125 (Colombia, Peru)','UTC-4':'UTC\u22124 (Atlantic)',
   'UTC-3':'UTC\u22123 (Argentina, Brazil)','UTC-2':'UTC\u22122','UTC-1':'UTC\u22121 (Cape Verde)',
   'UTC+0':'UTC+0 (GMT, Iceland)','UTC+1':'UTC+1 (West Africa, Nigeria)',
@@ -144,7 +192,7 @@ const SIZE=params.get('size')||'22x17';
 const CLOCK=params.get('clock')||(TZ_TV_MODE[TZ]==='none'?'24':'12');
 const offset=TZ_OFF[TZ]||0;
 const tvMode=TZ_TV_MODE[TZ]||'us';
-const dateFmt=TZ_DATE_FMT[TZ]||dateFmtDefault;
+const dateFmt=params.get('datefmt')||(TZ_DATE_FMT[TZ]||dateFmtDefault);
 
 // UK BBC/ITV mapping (group stage only)
 const UK_TV={1:'ITV',2:'ITV',3:'BBC',4:'BBC',5:'ITV',6:'BBC',7:'BBC',8:'ITV',9:'ITV',10:'ITV',11:'BBC',12:'ITV',13:'ITV',14:'BBC',15:'ITV',16:'BBC',17:'BBC',18:'BBC',19:'ITV',20:'BBC',21:'BBC',22:'ITV',23:'ITV',24:'BBC',25:'BBC',26:'ITV',27:'ITV',28:'BBC',29:'BBC',30:'ITV',31:'ITV',32:'ITV',33:'BBC',34:'ITV',35:'BBC',36:'BBC',37:'BBC',38:'ITV',39:'BBC',40:'ITV',41:'BBC',42:'BBC',43:'ITV',44:'ITV',45:'ITV',46:'BBC',47:'BBC',48:'ITV',49:'ITV',50:'ITV',51:'BBC',52:'BBC',53:'BBC',54:'BBC',55:'BBC',56:'BBC',57:'BBC',58:'BBC',59:'ITV',60:'ITV',61:'ITV',62:'ITV',63:'ITV',64:'ITV',65:'BBC',66:'BBC',67:'ITV',68:'ITV',69:'BBC',70:'BBC',71:'BBC',72:'BBC'};
@@ -291,7 +339,7 @@ const V=[{id:'VAN',city:'Vancouver',stad:'BC Place',co:'ca'},{id:'TOR',city:'Tor
 const [,_dayShift]=cvtTime('3p',offset);
 const ddEndDay=_dayShift>0?20:19;
 const DD=[null];for(let d=new Date(2026,5,11);d<=new Date(2026,6,ddEndDay);d.setDate(d.getDate()+1))DD.push(new Date(d));DD.push(null);
-const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const DOW=['SUN','MON','TUE','WED','THU','FRI','SAT'].map(d=>t_day(d));
 const ISO={MEX:'mx',RSA:'za',KOR:'kr',CZE:'cz',CAN:'ca',BIH:'ba',QAT:'qa',SUI:'ch',BRA:'br',MAR:'ma',HAI:'ht',SCO:'gb-sct',USA:'us',PAR:'py',AUS:'au',TUR:'tr',GER:'de',CUR:'cw',CIV:'ci',ECU:'ec',NED:'nl',JPN:'jp',SWE:'se',TUN:'tn',ESP:'es',CPV:'cv',KSA:'sa',URU:'uy',BEL:'be',EGY:'eg',IRN:'ir',NZL:'nz',FRA:'fr',SEN:'sn',IRQ:'iq',NOR:'no',ARG:'ar',ALG:'dz',AUT:'at',JOR:'jo',POR:'pt',COD:'cd',UZB:'uz',COL:'co',ENG:'gb-eng',CRO:'hr',GHA:'gh',PAN:'pa'};
 const fU=c=>`https://flagcdn.com/w160/${ISO[c]||'xx'}.png`;
 const M=[[1,'6/11','3p','MEX','RSA','A','MEX','FOX'],[2,'6/11','10p','KOR','CZE','A','GDL','FS1'],[3,'6/12','3p','CAN','BIH','B','TOR','FOX'],[4,'6/12','9p','USA','PAR','D','LAX','FOX'],[5,'6/13','3p','QAT','SUI','B','SFO','FOX'],[6,'6/13','6p','BRA','MAR','C','NYC','FS1'],[7,'6/13','9p','HAI','SCO','C','BOS','FS1'],[8,'6/14','12a','AUS','TUR','D','VAN','FS1'],[9,'6/14','1p','GER','CUR','E','HOU','FOX'],[10,'6/14','4p','NED','JPN','F','DAL','FOX'],[11,'6/14','7p','CIV','ECU','E','PHI','FS1'],[12,'6/14','10p','SWE','TUN','F','MTY','FS1'],[13,'6/15','12p','ESP','CPV','H','ATL','FOX'],[14,'6/15','3p','BEL','EGY','G','SEA','FOX'],[15,'6/15','6p','KSA','URU','H','MIA','FS1'],[16,'6/15','9p','IRN','NZL','G','LAX','FS1'],[17,'6/16','3p','FRA','SEN','I','NYC','FOX'],[18,'6/16','6p','IRQ','NOR','I','BOS','FOX'],[19,'6/16','9p','ARG','ALG','J','KCM','FOX'],[20,'6/17','12a','AUT','JOR','J','SFO','FS1'],[21,'6/17','1p','POR','COD','K','HOU','FOX'],[22,'6/17','4p','ENG','CRO','L','DAL','FOX'],[23,'6/17','7p','GHA','PAN','L','TOR','FS1'],[24,'6/17','10p','UZB','COL','K','MEX','FS1'],[25,'6/18','12p','CZE','RSA','A','ATL','FOX'],[26,'6/18','3p','SUI','BIH','B','LAX','FOX'],[27,'6/18','6p','CAN','QAT','B','VAN','FOX'],[28,'6/18','9p','MEX','KOR','A','GDL','FS1'],[29,'6/19','3p','USA','AUS','D','SEA','FOX'],[30,'6/19','6p','SCO','MAR','C','BOS','FS1'],[31,'6/19','8:30','BRA','HAI','C','PHI','FOX'],[32,'6/19','11p','TUR','PAR','D','SFO','FS1'],[33,'6/20','1p','NED','SWE','F','HOU','FOX'],[34,'6/20','4p','GER','CIV','E','TOR','FOX'],[35,'6/20','8p','ECU','CUR','E','KCM','FS1'],[36,'6/21','12a','TUN','JPN','F','MTY','FS1'],[37,'6/21','12p','ESP','KSA','H','ATL','FOX'],[38,'6/21','3p','BEL','IRN','G','LAX','FOX'],[39,'6/21','6p','URU','CPV','H','MIA','FS1'],[40,'6/21','9p','NZL','EGY','G','VAN','FS1'],[41,'6/22','1p','ARG','AUT','J','DAL','FOX'],[42,'6/22','5p','FRA','IRQ','I','PHI','FOX'],[43,'6/22','8p','NOR','SEN','I','NYC','FS1'],[44,'6/22','11p','JOR','ALG','J','SFO','FS1'],[45,'6/23','1p','POR','UZB','K','HOU','FOX'],[46,'6/23','4p','ENG','GHA','L','BOS','FOX'],[47,'6/23','7p','PAN','CRO','L','TOR','FS1'],[48,'6/23','10p','COL','COD','K','GDL','FS1'],[49,'6/24','3p','SUI','CAN','B','VAN','FOX'],[50,'6/24','3p','BIH','QAT','B','SEA','FS1'],[51,'6/24','6p','SCO','BRA','C','MIA','FOX'],[52,'6/24','6p','MAR','HAI','C','ATL','FS1'],[53,'6/24','9p','CZE','MEX','A','MEX','FOX'],[54,'6/24','9p','RSA','KOR','A','MTY','FS1'],[55,'6/25','4p','CUR','CIV','E','PHI','FS1'],[56,'6/25','4p','ECU','GER','E','NYC','FOX'],[57,'6/25','7p','JPN','SWE','F','DAL','FOX'],[58,'6/25','7p','TUN','NED','F','KCM','FS1'],[59,'6/25','10p','TUR','USA','D','LAX','FOX'],[60,'6/25','10p','PAR','AUS','D','SFO','FS1'],[61,'6/26','3p','NOR','FRA','I','BOS','FOX'],[62,'6/26','3p','SEN','IRQ','I','TOR','FS1'],[63,'6/26','8p','CPV','KSA','H','HOU','FS1'],[64,'6/26','8p','URU','ESP','H','GDL','FOX'],[65,'6/26','11p','EGY','IRN','G','SEA','FS1'],[66,'6/26','11p','NZL','BEL','G','VAN','FOX'],[67,'6/27','5p','PAN','ENG','L','NYC','FOX'],[68,'6/27','5p','CRO','GHA','L','PHI','FS1'],[69,'6/27','7:30','COL','POR','K','MIA','FOX'],[70,'6/27','7:30','COD','UZB','K','ATL','FS1'],[71,'6/27','10p','ALG','AUT','J','KCM','FS1'],[72,'6/27','10p','JOR','ARG','J','DAL','FOX'],[73,'6/28','3p','2A','2B','R32','LAX','FOX'],[74,'6/29','4:30p','1E','3rd','R32','BOS','FOX'],[75,'6/29','9p','1F','2C','R32','MTY','FS1'],[76,'6/29','1p','1C','2F','R32','HOU','FS1'],[77,'6/30','5p','1I','3rd','R32','NYC','FOX'],[78,'6/30','1p','2E','2I','R32','DAL','FOX'],[79,'6/30','9p','1A','3rd','R32','MEX','FS1'],[80,'7/1','12p','1L','3rd','R32','ATL','FOX'],[81,'7/1','8p','1D','3rd','R32','SFO','FS1'],[82,'7/1','4p','1G','3rd','R32','SEA','FOX'],[83,'7/2','7p','2K','2L','R32','TOR','FS1'],[84,'7/2','3p','1H','2J','R32','LAX','FOX'],[85,'7/2','11p','1B','3rd','R32','VAN','FS1'],[86,'7/3','6p','1J','2H','R32','MIA','FOX'],[87,'7/3','9:30','1K','3rd','R32','KCM','FS1'],[88,'7/3','2p','2D','2G','R32','DAL','FOX'],[89,'7/4','5p','','','R16','PHI','FOX','W74','W77'],[90,'7/4','1p','','','R16','HOU','FOX','W73','W75'],[91,'7/5','4p','','','R16','NYC','FOX','W76','W78'],[92,'7/5','8p','','','R16','MEX','FOX','W79','W80'],[93,'7/6','3p','','','R16','DAL','FOX','W83','W84'],[94,'7/6','8p','','','R16','SEA','FOX','W81','W82'],[95,'7/7','12p','','','R16','ATL','FOX','W86','W88'],[96,'7/7','4p','','','R16','VAN','FOX','W85','W87'],[97,'7/9','4p','','','QF','BOS','FOX','W89','W90'],[98,'7/10','3p','','','QF','LAX','FOX','W93','W94'],[99,'7/11','5p','','','QF','MIA','FOX','W91','W92'],[100,'7/11','9p','','','QF','KCM','FOX','W95','W96'],[101,'7/14','3p','','','SF','DAL','FOX','W97','W98'],[102,'7/15','3p','','','SF','ATL','FOX','W99','W100'],[103,'7/18','5p','','','3RD','MIA','FOX','L101','L102'],[104,'7/19','3p','','','FIN','NYC','FOX','W101','W102']];
@@ -374,11 +422,11 @@ const gsEndDay=gsMaxDate%100;
     const datesText=dateFmt==='uk'?gsStartDay+' JUNE \u2013 '+ddEndDay+' JULY':'JUNE '+gsStartDay+' \u2013 JULY '+ddEndDay;
     const tvText=tvMode==='us'?'FOX / FS1':tvMode==='uk'?'BBC / ITV':'';
     const clockLabel=CLOCK==='24'?' (24h)':'';
-    const infoLine2='All times '+TZ_NAME[TZ]+clockLabel+(tvText?' \u00a0|\u00a0 '+tvText:'');
-    tb.innerHTML='<h1>2026 <span class="year">FIFA World Cup</span></h1>'+
-      '<div class="hosts"><span style="color:'+P.textHost[0]+'">CANADA</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">MEXICO</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">USA</span></div>'+
+    const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(tvText?' \u00a0|\u00a0 '+tvText:'');
+    tb.innerHTML='<h1>2026 <span class="year">'+(LANG==='es'?'Copa Mundial FIFA':'FIFA World Cup')+'</span></h1>'+
+      '<div class="hosts" style="margin-left:'+(LANG==='es'?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+(LANG==='es'?'CANADÁ':'CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+(LANG==='es'?'MÉXICO':'MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+(LANG==='es'?'EE.UU.':'USA')+'</span></div>'+
       '<div class="dates" style="margin-left:100px">'+datesText+'</div>'+
-      '<div class="title-info">48 Teams \u00a0|\u00a0 104 Matches<br>'+infoLine2+'</div>';
+      '<div class="title-info">'+(LANG==='es'?'48 Equipos \u00a0|\u00a0 104 Partidos':'48 Teams \u00a0|\u00a0 104 Matches')+'<br>'+infoLine2+'</div>';
   }
 }
 
@@ -413,8 +461,8 @@ function dateRange(m1,d1,m2,d2){let s=0,e=0;DD.forEach((d,i)=>{if(d&&d.getMonth(
 const[,junE]=dateRange(5,11,5,30);const[julS,]=dateRange(6,1,6,1);
 let moStr='<div class="month-strip">';
 DD.forEach((d,i)=>{const bg=d?(isEv(d)?hdrE:hdrO):hdrE;moStr+=`<div class="month-bg" style="width:${dW[i]}px;background-color:${bg}"></div>`});
-moStr+=`<div class="month-label-abs" style="left:0;width:${junE}px">JUNE</div>`;
-moStr+=`<div class="month-label-abs" style="left:${julS}px;width:${cumPx-julS}px">JULY</div>`;
+moStr+=`<div class="month-label-abs" style="left:0;width:${junE}px">${LANG==='es'?'JUNIO':'JUNE'}</div>`;
+moStr+=`<div class="month-label-abs" style="left:${julS}px;width:${cumPx-julS}px">${LANG==='es'?'JULIO':'JULY'}</div>`;
 moStr+='</div>';
 
 let dh='<div class="date-hdr">';
@@ -441,7 +489,7 @@ M.forEach(m=>{
 });
 
 // Build stage strip labels from actual data
-const stageOrder=[['GS','GROUP STAGE'],['R32','ROUND OF 32'],['R16','ROUND OF 16'],['QF','QUARTERS'],['SF','SEMIS'],['FIN','FINALS']];
+const stageOrder=[['GS','GROUP STAGE'],['R32','ROUND OF 32'],['R16','ROUND OF 16'],['QF','QUARTERS'],['SF','SEMIS'],['FIN','FINALS']].map(s=>[s[0],t_stage(s[1])]);
 let stgData=[];
 stageOrder.forEach(([key,label])=>{
   const r=stageMap[key];if(!r)return;
@@ -477,13 +525,21 @@ DD.forEach((d,i)=>{
     }
   }
 });
-offDays.forEach(([mo2,dy])=>{const[s,e]=dateRange(mo2,dy,mo2,dy);if(e>s)stg+=`<div class="stage-off-abs" style="left:${s}px;width:${e-s}px">OFF</div>`});
+// Group consecutive off days into spans
+const offSpans=[];
+offDays.forEach(([mo2,dy])=>{
+  const last=offSpans.length?offSpans[offSpans.length-1]:null;
+  if(last&&((mo2===last[2]&&dy===last[3]+1)||(mo2===last[2]+1&&dy===1&&last[3]>=28))){
+    last[2]=mo2;last[3]=dy;
+  }else{offSpans.push([mo2,dy,mo2,dy])}
+});
+offSpans.forEach(([m1,d1,m2,d2])=>{const[s,]=dateRange(m1,d1,m1,d1);const[,e]=dateRange(m2,d2,m2,d2);if(e>s)stg+=`<div class="stage-off-abs" style="left:${s}px;width:${e-s}px">${LANG==="es"?"LIBRE":"OFF"}</div>`});
 // OFF days handled by dynamic code above
 stg+='</div>';
 
 const topH=moH+hdrH+stgH;
-let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 20px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">MATCH<br>LOCATIONS</div>`;
-V.forEach(v=>{vcH+=`<div class="v-label v-${v.co}" style="height:${rowH}px"><div class="v-city">${v.city}</div><div class="v-stad">${v.stad}</div></div>`});
+let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 20px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">${LANG==='es'?'SEDES':'MATCH<br>LOCATIONS'}</div>`;
+V.forEach(v=>{vcH+=`<div class="v-label v-${v.co}" style="height:${rowH}px"><div class="v-city">${t_city(v.city)}</div><div class="v-stad">${v.stad}</div></div>`});
 vc.innerHTML=vcH;
 
 let gh=moStr+dh+stg;
@@ -512,11 +568,11 @@ V.forEach(v=>{
           const rd=KOL[grp]||grp;const hasT=!!t1;const hasF=!!f1;let r3='';const koShift=['QF','SF','3RD'].includes(grp)?'<div style="height:3px"></div>':'';
           if(hasT)r3=`<div class="mc-ko-feeder-row"><span class="mc-ko-fl">${t1}</span><span class="mc-ko-fv">v</span><span class="mc-ko-fr">${t2}</span></div>`;
           if(hasF)r3+=`<div class="mc-ko-feeder-row"><span class="mc-ko-fl">${f1}</span><span class="mc-ko-fv">v</span><span class="mc-ko-fr">${f2}</span></div>`;
-          inner+=`<div class="mc-ko-num">#${num}</div>${koShift}<div style="flex:0.15"></div><div class="mc-ko-round" style="${grp==="FIN"?"font-size:28px":""}">${rd}</div><div style="height:4px"></div>${r3}<div style="height:4px"></div><div class="mc-ko-boxes"><span class="mc-ko-tbox"></span><span class="mc-ko-tbox"></span></div><div style="height:4px"></div><div class="mc-ko-time">${tD}${chan?'·'+chan:''}</div><div style="flex:0.6"></div>`;
+          inner+=`<div class="mc-ko-num">#${num}</div>${koShift}<div style="flex:0.15"></div><div class="mc-ko-round" style="${grp==="FIN"?"font-size:28px":""}">${rd}</div><div style="height:4px"></div>${r3}<div style="height:4px"></div><div class="mc-ko-boxes"><span class="mc-ko-tbox"></span><span class="mc-ko-tbox"></span></div><div style="height:4px"></div><div class="mc-ko-time">${tD}${showChan&&chan?'·'+chan:''}</div><div style="flex:0.6"></div>`;
         } else {
-          inner+=`<div class="mc-grp-top">GROUP ${grp}</div><div class="mc-teams-row"><span class="mc-team-left">${t1}</span><span class="mc-tv">v</span><span class="mc-team-right">${t2}</span></div>
+          inner+=`<div class="mc-grp-top">${LANG==='es'?'GRUPO':'GROUP'} ${grp}</div><div class="mc-teams-row"><span class="mc-team-left">${t1}</span><span class="mc-tv">v</span><span class="mc-team-right">${t2}</span></div>
             <div class="mc-flags-row"><div class="mc-flag-wrap"><img class="mc-flag" src="${fU(t1)}" alt="${t1}"></div><div class="mc-flag-wrap"><img class="mc-flag" src="${fU(t2)}" alt="${t2}"></div></div>
-            <div class="mc-botline"><span class="mc-match-num">#${num}</span><span class="mc-time">${tD}${chan?'·'+chan:''}</span></div>`;
+            <div class="mc-botline"><span class="mc-match-num">#${num}</span><span class="mc-time">${tD}${showChan&&chan?'·'+chan:''}</span></div>`;
         }
         gh+=`<div class="mc" style="left:-${oP}%;width:${wP}%;background-color:${bg};z-index:5;overflow:hidden">${inner}</div>`;
       });
@@ -621,11 +677,11 @@ bTxt(bFinX,bFinY+27,'3rd · #103',16,'#778','middle');
 
 // Champion write-in box (at average y of match #80 and #88)
 const champY=bLeft.botY-bH/2;
-bTxt(bFinX,champY-71,'CHAMPION',22,bGC,'middle');
+bTxt(bFinX,champY-71,LANG==='es'?'CAMPEÓN':'CHAMPION',22,bGC,'middle');
 bBox(bFinX-46,champY-33,88,35);
 
 // Add title
-bTxt(bSeedR/2+bSeedL/2,18,'KNOCKOUT STAGE',28,bGC,'middle');
+bTxt(bSeedR/2+bSeedL/2,18,LANG==='es'?'FASE ELIMINATORIA':'KNOCKOUT STAGE',28,bGC,'middle');
 
 const bMaxY=bLeft.botY+35;
 brSvg.setAttribute('width',bSeedR+80);
@@ -661,10 +717,10 @@ ga.appendChild(cDiv);
 
 
 const gA=document.getElementById('groups-area');
-const grpTitle=dateFmt==='uk'?'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 '+gsStartDay+'\u201328 June 2026':'Group Stage \u2022 12 Groups \u2022 48 Teams \u2022 June '+gsStartDay+'\u201327, 2026';
+const grpTitle=dateFmt==='uk'?(LANG==='es'?'Fase de Grupos':'Group Stage')+' \u2022 12 Groups \u2022 48 Teams \u2022 '+gsStartDay+'\u201328 June 2026':(LANG==='es'?'Fase de Grupos':'Group Stage')+' \u2022 '+(LANG==='es'?'12 Grupos \u2022 48 Equipos':'12 Groups \u2022 48 Teams')+' \u2022 '+(LANG==='es'?'Junio':'June')+' '+gsStartDay+'\u201327, 2026';
 let gH='<div class="groups-title">'+grpTitle+'</div><div class="groups-grid">';
 Object.keys(GROUPS).forEach(g=>{
-  gH+='<div class="grp-box"><div class="grp-hdr">GROUP '+g+'</div>';
+  gH+='<div class="grp-box"><div class="grp-hdr">'+( LANG==='es'?'GRUPO':'GROUP')+'\u00A0'+g+'</div>';
   gH+='<div class="grp-standings-hdr"><span></span><span>W</span><span>D</span><span>L</span><span>GF</span><span>GA</span><span>Pts</span></div>';
   GROUPS[g].forEach(([iso,ab,nm])=>{gH+=`<div class="grp-team-block"><div class="grp-team-name">${nm}</div><div class="grp-team-data"><div class="grp-flag-code"><div class="grp-flag-box"><img class="fl" src="https://flagcdn.com/w80/${iso}.png" alt="${ab}"></div><span class="grp-code">${ab}</span></div><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell"></span><span class="st-cell st-pts"></span></div></div>`});
   gH+='<div class="grp-matches">';

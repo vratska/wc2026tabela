@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026 FIFA World Cup Wall Chart</title>
-<meta name="description" content="Free printable 2026 FIFA World Cup schedule poster. All 104 matches, knockout bracket, and group standings in your timezone. Download as PDF or print-ready HTML.">
+<meta name="description" content="Free printable 2026 FIFA World Cup schedule poster / Calendario imprimible del Mundial 2026. All 104 matches in your timezone. Download as PDF or PNG.">
 <!-- Social sharing tags -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="2026 FIFA World Cup Wall Chart">
-<meta property="og:description" content="Free printable schedule poster with all 104 matches, knockout bracket &amp; group standings in your timezone.">
+<meta property="og:title" content="2026 FIFA World Cup Wall Chart / Calendario del Mundial 2026">
+<meta property="og:description" content="Free printable schedule poster with all 104 matches. Calendario imprimible con los 104 partidos en tu zona horaria.">
 <meta property="og:image" content="https://wc2026chart.github.io/og-image.png">
 <meta property="og:url" content="https://wc2026chart.github.io/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="2026 FIFA World Cup Wall Chart">
-<meta name="twitter:description" content="Free printable schedule poster with all 104 matches, knockout bracket &amp; group standings in your timezone.">
+<meta name="twitter:title" content="2026 FIFA World Cup Wall Chart / Calendario del Mundial 2026">
+<meta name="twitter:description" content="Free printable schedule poster with all 104 matches. Calendario imprimible con los 104 partidos en tu zona horaria.">
 <meta name="twitter:image" content="https://wc2026chart.github.io/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -136,6 +136,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
         <option value="24x36">24 × 36″ (Vertical poster)</option>
       </select>
     </div>
+    <div class="config-group">
+      <label id="lbl-lang">Language</label>
+      <select id="sel-lang" onchange="update()">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+      </select>
+    </div>
   </div>
 
 <div class="actions">
@@ -172,13 +179,15 @@ function getParams() {
     theme: document.getElementById('sel-theme').value,
     tz: document.getElementById('sel-tz').value,
     size: document.getElementById('sel-size').value,
-    clock: document.getElementById('sel-clock').value
+    clock: document.getElementById('sel-clock').value,
+    lang: document.getElementById('sel-lang').value,
+    datefmt: document.getElementById('sel-datefmt').value
   };
 }
 
 function buildURL(p) {
   const base = p.size==='24x36' ? 'poster-vertical.html' : 'poster.html';
-  return `${base}?tz=${encodeURIComponent(p.tz)}&theme=${p.theme}&size=${p.size}${p.clock==='24'&&!['ET','CT','MT','PT','BST'].includes(p.tz)?'&clock=24':''}`;
+  return `${base}?tz=${encodeURIComponent(p.tz)}&theme=${p.theme}&size=${p.size}${p.clock==='24'&&!['ET','CT','MT','PT','BST'].includes(p.tz)?'&clock=24':''}${p.lang&&p.lang!=='en'?'&lang='+p.lang:''}${p.datefmt&&p.datefmt!=='auto'?'&datefmt='+p.datefmt:''}`;
 }
 
 function update() {
@@ -189,14 +198,22 @@ function update() {
   document.getElementById('btn-download').href = 'poster.html';
   
   const usZones = ['ET','CT','MT','PT'];
-  if (usZones.includes(p.tz)) {
+  if (p.lang === 'es') {
+    // Spanish: always show both toggles, default 24h + DD/MM
+    document.getElementById('clock-toggle').style.display='block';
+    document.getElementById('datefmt-toggle').style.display='block';
+    if (p.tz !== _prevTZ && !_initDone) { document.getElementById('sel-clock').value='24'; document.getElementById('sel-datefmt').value='uk'; }
+  } else if (usZones.includes(p.tz)) {
     document.getElementById('clock-toggle').style.display='none';
+    document.getElementById('datefmt-toggle').style.display='none';
     document.getElementById('sel-clock').value='12';
   } else if (p.tz === 'BST') {
     document.getElementById('clock-toggle').style.display='none';
+    document.getElementById('datefmt-toggle').style.display='none';
     document.getElementById('sel-clock').value='12';
   } else {
     document.getElementById('clock-toggle').style.display='block';
+    document.getElementById('datefmt-toggle').style.display='block';
     if (p.tz !== _prevTZ) document.getElementById('sel-clock').value='24';
   }
   
@@ -275,6 +292,55 @@ function autoDetectTZ() {
 
 autoDetectTZ();
 update();
+
+// ===== LANGUAGE SUPPORT =====
+const _urlLang = new URLSearchParams(window.location.search).get('lang') || 'en';
+document.getElementById('sel-lang').value = _urlLang;
+let _initDone = false;
+if (_urlLang === 'es') {
+  document.getElementById('sel-tz').value = 'UTC-6';
+  document.getElementById('sel-clock').value = '24';
+  document.getElementById('sel-datefmt').value = 'uk';
+}
+
+const _es = {
+  'Color Scheme':'Esquema de Color','Dark (screen / poster print)':'Oscuro (pantalla / póster)',
+  'Light (home printer)':'Claro (impresora)','Time Zone':'Zona Horaria',
+  'Paper Size':'Tamaño de Papel','Language':'Idioma',
+  'Clock Format':'Formato de Reloj','Date Format':'Formato de Fecha','Auto (by timezone)':'Auto (por zona horaria)','24-hour (15:00)':'24 horas (15:00)','12-hour (3p)':'12 horas (3p)',
+  'Letter Landscape (11×8.5″)':'Carta Horizontal (11×8.5″)',
+  'A3 Landscape (420×297mm)':'A3 Horizontal (420×297mm)',
+  '24 × 16″ (3:2 poster)':'24 × 16″ (póster 3:2)',
+  '24 × 36″ (Vertical poster)':'24 × 36″ (Póster vertical)',
+  'Open Poster':'Abrir Póster','Print':'Imprimir',
+  'Download PDF':'Descargar PDF','Download PNG':'Descargar PNG','Download HTML':'Descargar HTML',
+  'Live Preview':'Vista Previa','Printing Tips':'Consejos de Impresión',
+  'Loading preview…':'Cargando vista previa…'
+};
+function applyLang(){
+  const lang=document.getElementById('sel-lang').value;
+  if(lang==='es'){
+    document.querySelectorAll('label').forEach(l=>{if(_es[l.textContent])l.textContent=_es[l.textContent]});
+    document.querySelectorAll('option').forEach(o=>{if(_es[o.textContent])o.textContent=_es[o.textContent]});
+    document.querySelector('.preview-label').textContent=_es['Live Preview'];
+    document.getElementById('overlay').childNodes[0].textContent=_es['Loading preview…']||'';
+    const btns=document.querySelectorAll('.btn');
+    btns.forEach(b=>{
+      if(b.textContent.includes('Open Poster'))b.textContent='↗ '+_es['Open Poster'];
+      if(b.textContent.includes('Print')&&!b.textContent.includes('PDF'))b.textContent='🖨 '+_es['Print'];
+      if(b.textContent.includes('Download PDF'))b.textContent='📥 '+_es['Download PDF'];
+      if(b.textContent.includes('Download PNG'))b.textContent='🖼 '+_es['Download PNG'];
+      if(b.textContent.includes('Download HTML'))b.textContent='📄 '+_es['Download HTML'];
+    });
+    const h2=document.querySelector('.how-to h2');
+    if(h2)h2.textContent=_es['Printing Tips'];
+    document.title='Copa Mundial FIFA 2026 – Calendario';
+    document.querySelector('meta[property="og:title"]').content='Copa Mundial FIFA 2026 – Calendario';
+    document.querySelector('meta[name="twitter:title"]').content='Copa Mundial FIFA 2026 – Calendario';
+  }
+}
+applyLang();
+_initDone = true;
 </script>
 </body>
 </html>
