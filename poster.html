@@ -127,7 +127,7 @@ const TR={
   // Group table headers
   W:'G',D:'E',L:'P',GF:'GF',GA:'GC',Pts:'Pts'
 };
-const showChan=LANG!=='es';
+const showChan=true;  // channels in match cells follow timezone selection
 function t_team(name){return LANG==='es'&&TR.teams[name]?TR.teams[name]:name}
 function t_city(name){return LANG==='es'&&TR.cities[name]?TR.cities[name]:name}
 function t_day(d){return LANG==='es'&&TR.days[d]?TR.days[d]:d}
@@ -422,7 +422,7 @@ const gsStartDay=gsMinDate%100;
   const datesText=dateFmt==='uk'?firstDay+' '+(LANG==='es'?'JUNIO':'JUNE')+' \u2013 '+lastDay+' '+(LANG==='es'?'JULIO':'JULY'):(LANG==='es'?'JUNIO':'JUNE')+' '+firstDay+' \u2013 '+(LANG==='es'?'JULIO':'JULY')+' '+lastDay;
   const tvText=tvMode==='us'?'FOX / FS1':tvMode==='uk'?'BBC / ITV':'';
   const clockLabel=CLOCK==='24'?' (24h)':'';
-  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(showChan&&tvText?' \u00a0|\u00a0 '+tvText:'');
+  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(LANG!=='es'&&tvText?' \u00a0|\u00a0 '+tvText:'');
   tb.innerHTML='<h1>2026 <span class="year">'+(LANG==='es'?'Copa Mundial FIFA':'FIFA World Cup')+'</span></h1>'+
     '<div class="hosts" style="margin-left:'+(LANG==='es'?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+(LANG==='es'?'CANADÁ':'CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+(LANG==='es'?'MÉXICO':'MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+(LANG==='es'?'EE.UU.':'USA')+'</span></div>'+
     '<div class="dates" style="margin-left:'+(LANG==='es'?'65':'85')+'px">'+datesText+'</div>'+
