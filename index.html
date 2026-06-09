@@ -320,11 +320,19 @@ const _es = {
 function applyLang(){
   const lang=document.getElementById('sel-lang').value;
   if(lang==='es'){
+    // Main header
+    document.querySelector('.cup').textContent='Copa Mundial FIFA';
+    document.querySelector('.ca').textContent='CANADÁ';
+    document.querySelector('.mx').textContent='MÉXICO';
+    document.querySelector('.us').textContent='EE.UU.';
+    document.querySelector('.sub').textContent='Calendario imprimible — los 104 partidos, sedes, horarios, bracket de eliminatorias y grupos.';
+    // Labels and dropdowns
     document.querySelectorAll('label').forEach(l=>{if(_es[l.textContent])l.textContent=_es[l.textContent]});
     document.querySelectorAll('option').forEach(o=>{if(_es[o.textContent])o.textContent=_es[o.textContent]});
     document.querySelector('.preview-label').textContent=_es['Live Preview'];
-    document.getElementById('overlay').childNodes[0].textContent=_es['Loading preview…']||'';
-    const btns=document.querySelectorAll('.btn');
+    var ov=document.getElementById('overlay');if(ov)ov.textContent=_es['Loading preview…']||'';
+    // Buttons
+    var btns=document.querySelectorAll('.btn');
     btns.forEach(b=>{
       if(b.textContent.includes('Open Poster'))b.textContent='↗ '+_es['Open Poster'];
       if(b.textContent.includes('Print')&&!b.textContent.includes('PDF'))b.textContent='🖨 '+_es['Print'];
@@ -332,11 +340,11 @@ function applyLang(){
       if(b.textContent.includes('Download PNG'))b.textContent='🖼 '+_es['Download PNG'];
       if(b.textContent.includes('Download HTML'))b.textContent='📄 '+_es['Download HTML'];
     });
-    const h2=document.querySelector('.how-to h2');
+    var h2=document.querySelector('.how-to h2');
     if(h2)h2.textContent=_es['Printing Tips'];
     document.title='Copa Mundial FIFA 2026 – Calendario';
-    document.querySelector('meta[property="og:title"]').content='Copa Mundial FIFA 2026 – Calendario';
-    document.querySelector('meta[name="twitter:title"]').content='Copa Mundial FIFA 2026 – Calendario';
+    var ogT=document.querySelector('meta[property="og:title"]');if(ogT)ogT.content='Copa Mundial FIFA 2026 – Calendario';
+    var twT=document.querySelector('meta[name="twitter:title"]');if(twT)twT.content='Copa Mundial FIFA 2026 – Calendario';
   }
 }
 applyLang();
