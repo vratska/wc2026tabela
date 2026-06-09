@@ -138,7 +138,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div class="config-group">
       <label id="lbl-lang">Language</label>
-      <select id="sel-lang" onchange="update()">
+      <select id="sel-lang" onchange="applyLang();update()">
         <option value="en">English</option>
         <option value="es">Español</option>
       </select>
@@ -291,7 +291,6 @@ function autoDetectTZ() {
 }
 
 autoDetectTZ();
-update();
 
 // ===== LANGUAGE SUPPORT =====
 const _urlLang = new URLSearchParams(window.location.search).get('lang') || 'en';
@@ -348,6 +347,7 @@ function applyLang(){
   }
 }
 applyLang();
+update();
 _initDone = true;
 </script>
 </body>
