@@ -312,7 +312,7 @@ if (_urlLang === 'es') {
 
 const _es = {
   'Color Scheme':'Esquema de Color','Dark (screen / poster print)':'Oscuro (pantalla / póster)',
-  'Light (home printer)':'Claro (impresora)','Time Zone':'Zona Horaria',
+  'Light (printer-friendly)':'Claro (impresora)','Time Zone':'Zona Horaria',
   'Paper Size':'Tamaño de Papel','Language':'Idioma',
   'Clock Format':'Formato de Reloj','Date Format':'Formato de Fecha','Auto (by timezone)':'Auto (por zona horaria)','24-hour (15:00)':'24 horas (15:00)','12-hour (3p)':'12 horas (3p)',
   'Letter Landscape (11×8.5″)':'Carta Horizontal (11×8.5″)',
@@ -333,6 +333,22 @@ function applyLang(){
     document.querySelector('.mx').textContent='MÉXICO';
     document.querySelector('.us').textContent='EE.UU.';
     document.querySelector('.sub').textContent='Calendario imprimible — los 104 partidos, sedes, horarios, bracket de eliminatorias y grupos.';
+    // Timezone dropdown
+    document.querySelectorAll('#sel-tz optgroup').forEach(g=>{
+      if(g.label.includes('US'))g.label='🇺🇸 EE.UU. y 🇬🇧 Reino Unido — con canales de TV';
+      if(g.label.includes('All Time'))g.label='Todas las zonas horarias';
+    });
+    document.querySelectorAll('#sel-tz option').forEach(o=>{
+      o.textContent=o.textContent
+        .replace('Eastern US','Este EE.UU.').replace('Central US','Centro EE.UU.')
+        .replace('Mountain US','Montaña EE.UU.').replace('Pacific US','Pacífico EE.UU.')
+        .replace('UK (BST)','Reino Unido (BST)')
+        .replace('Mexico City','Ciudad de México').replace('Eastern Std','Este')
+        .replace('Central Std','Centro').replace('Pacific Std','Pacífico').replace('Mountain Std','Montaña')
+        .replace('Mid-Atlantic','Atlántico Medio').replace('South Africa','Sudáfrica')
+        .replace('Saudi Arabia','Arabia Saudita').replace('Australia East','Australia Este')
+        .replace('New Zealand','Nueva Zelanda').replace('Solomon Islands','Islas Salomón');
+    });
     // Labels and dropdowns
     document.querySelectorAll('label').forEach(l=>{if(_es[l.textContent])l.textContent=_es[l.textContent]});
     document.querySelectorAll('option').forEach(o=>{if(_es[o.textContent])o.textContent=_es[o.textContent]});
