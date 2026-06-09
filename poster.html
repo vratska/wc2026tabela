@@ -386,7 +386,7 @@ const SIZES={
 const SZ=SIZES[SIZE]||SIZES['22x17'];
 document.body.style.width=SZ.w+'px';
 document.body.style.height=SZ.h+'px';
-const VW=SZ.vw,GW=SZ.w-VW,grpH=SZ.grpH;
+const VW=SZ.vw+(LANG==='es'?12:0),GW=SZ.w-VW,grpH=SZ.grpH;
 // Size-dependent styles
 document.querySelector('style').textContent+=`
 .v-city{font-size:${SZ.cityF}px!important}
@@ -422,7 +422,7 @@ const gsStartDay=gsMinDate%100;
   const datesText=dateFmt==='uk'?firstDay+' '+(LANG==='es'?'JUNIO':'JUNE')+' \u2013 '+lastDay+' '+(LANG==='es'?'JULIO':'JULY'):(LANG==='es'?'JUNIO':'JUNE')+' '+firstDay+' \u2013 '+(LANG==='es'?'JULIO':'JULY')+' '+lastDay;
   const tvText=tvMode==='us'?'FOX / FS1':tvMode==='uk'?'BBC / ITV':'';
   const clockLabel=CLOCK==='24'?' (24h)':'';
-  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(tvText?' \u00a0|\u00a0 '+tvText:'');
+  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(showChan&&tvText?' \u00a0|\u00a0 '+tvText:'');
   tb.innerHTML='<h1>2026 <span class="year">'+(LANG==='es'?'Copa Mundial FIFA':'FIFA World Cup')+'</span></h1>'+
     '<div class="hosts" style="margin-left:'+(LANG==='es'?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+(LANG==='es'?'CANADÁ':'CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+(LANG==='es'?'MÉXICO':'MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+(LANG==='es'?'EE.UU.':'USA')+'</span></div>'+
     '<div class="dates" style="margin-left:'+(LANG==='es'?'65':'85')+'px">'+datesText+'</div>'+
@@ -436,6 +436,7 @@ const dW=dWts.map(w=>Math.round(w*GW/tW));
 const moH=26,hdrH=71,stgH=40;
 const gridH=2512-109-moH-hdrH-stgH-grpH;
 const rowH=Math.floor(gridH/V.length);
+const lastRowH=gridH-rowH*(V.length-1);
 
 function isEv(d,di){if(d)return d.getDate()%2===0;if(di<=0)return DD[1]?(DD[1].getDate()-1)%2===0:false;return DD[di-1]?(DD[di-1].getDate()+1)%2===0:false}
 // Solid colors (pre-blended on body bg #1a1e3a)
@@ -536,18 +537,18 @@ stg+='</div>';
 
 const topH=moH+hdrH+stgH;
 let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 29px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">${LANG==='es'?'SEDES':'MATCH<br>LOCATIONS'}</div>`;
-V.forEach(v=>{vcH+=`<div class="v-label v-${v.co}" style="height:${rowH}px"><div class="v-city">${t_city(v.city)}</div><div class="v-stad">${v.stad}</div></div>`});
+V.forEach((v,vi)=>{const rh=vi===V.length-1?lastRowH:rowH;vcH+=`<div class="v-label v-${v.co}" style="height:${rh}px"><div class="v-city">${t_city(v.city)}</div><div class="v-stad">${v.stad}</div></div>`});
 vc.innerHTML=vcH;
 
 let gh=moStr+dh+stg;
-V.forEach(v=>{
-
-  gh+=`<div class="g-row" style="height:${rowH}px">`;
+V.forEach((v,vi)=>{
+  const rh=vi===V.length-1?lastRowH:rowH;
+  gh+=`<div class="g-row" style="height:${rh}px">`;
   DD.forEach((d,di)=>{
     const ev=isEv(d,di);const bg=cellBg(v.co,ev);
-    if(!d){gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}"></div>`;return}
+    if(!d){gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rh}px;background-color:${bg}"></div>`;return}
     const k=(d.getMonth()+1)+'/'+d.getDate();const lk=v.id+'_'+k;const ms=mL[lk];
-    gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rowH}px;background-color:${bg}">`;
+    gh+=`<div class="g-cell" style="width:${dW[di]}px;height:${rh}px;background-color:${bg}">`;
     if(ms){
       ms.forEach(m=>{
         const[num,,time,t1,t2,grp,,chan,f1,f2]=m;
