@@ -33,13 +33,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .hero .sub{font-size:clamp(13px,1.6vw,18px);color:var(--text-dim);font-weight:300;max-width:550px;margin:0 auto;line-height:1.5}
 
 .config{max-width:880px;margin:35px auto;padding:0 20px}
-.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:24px}
-.config-group{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:18px}
-.config-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:10px}
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:14px}
+.config-group{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:14px 16px}
+.config-group label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-weight:600;margin-bottom:6px}
 .config-group select{width:100%;padding:11px 14px;background:var(--bg);color:var(--text);border:1px solid var(--card-border);border-radius:7px;font-family:'Outfit',sans-serif;font-size:15px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238890aa' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
 .config-group select:focus{outline:none;border-color:var(--gold)}
 
-.actions{text-align:center;margin-bottom:30px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.actions{text-align:center;margin-bottom:16px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border:none;border-radius:9px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.5px;cursor:pointer;text-decoration:none;transition:transform 0.15s,box-shadow 0.15s}
 .btn:hover{transform:translateY(-2px)}
 .btn-gold{background:linear-gradient(135deg,var(--gold),#d4b040);color:#0a0c18;box-shadow:0 4px 16px rgba(201,168,48,0.25)}
@@ -146,7 +146,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div class="config-group">
       <label id="lbl-lang">Language</label>
-      <select id="sel-lang" onchange="applyLang();update()">
+      <select id="sel-lang" onchange="var l=this.value;var u=new URL(window.location);if(l==='es'){u.searchParams.set('lang','es')}else{u.searchParams.delete('lang')};window.location=u.toString()">
         <option value="en">English</option>
         <option value="es">Español</option>
       </select>
