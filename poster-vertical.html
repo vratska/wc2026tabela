@@ -94,6 +94,33 @@
   .gm-ch{color:#aab;font-size:15px;font-weight:500;min-width:22px;text-align:right}
 @media print { body { zoom: 1 !important; } }
 </style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  if (LANG === 'pt' || LANG === 'es') {
+    const t = TRANSLATIONS[LANG];
+    const h1 = document.querySelector('.title-bar h1');
+    if (h1) {
+      if (LANG === 'pt') h1.innerHTML = 'COPA DO MUNDO <span class="year">2026</span>';
+      if (LANG === 'es') h1.innerHTML = 'COPA MUNDIAL <span class="year">2026</span>';
+    }
+    const hostsEl = document.querySelector('.title-bar .hosts');
+    if (hostsEl) hostsEl.textContent = t.hosts;
+    
+    document.querySelectorAll('.group-title, .section-title, .ko-title').forEach(el => {
+      let txt = el.textContent.trim();
+      if (t.stages[txt]) el.textContent = t.stages[txt];
+      if (txt.includes('GROUP')) el.textContent = txt.replace('GROUP', t.group);
+    });
+    
+    document.querySelectorAll('th').forEach(th => {
+      let txt = th.textContent.trim();
+      if (t[txt]) th.textContent = t[txt];
+    });
+  }
+});
+</script>
+
 </head>
 <body>
 <div class="title-bar" id="title-bar-content"></div>
@@ -101,6 +128,82 @@
 <div id="grid-area"></div>
 <div id="groups-area"></div>
 <script>
+
+// ===== LANGUAGE SUPPORT =====
+const LANG = params.get('lang') || 'en';
+
+const TRANSLATIONS = {
+  es: {
+    teams: {
+      'Mexico':'México','South Africa':'Sudáfrica','S. Korea':'Corea del Sur','Czechia':'Chequia',
+      'Canada':'Canadá','Bosnia & Hz':'Bosnia y Hz','Qatar':'Catar','Switzerland':'Suiza',
+      'Brazil':'Brasil','Morocco':'Marruecos','Haiti':'Haití','Scotland':'Escocia',
+      'United States':'Estados Unidos','Paraguay':'Paraguay','Australia':'Australia','Türkiye':'Turquía',
+      'Germany':'Alemania','Curaçao':'Curazao','Ivory Coast':'Costa de Marfil','Ecuador':'Equador',
+      'Netherlands':'Países Bajos','Japan':'Japón','Sweden':'Suecia','Tunisia':'Túnez',
+      'Belgium':'Bélgica','Egypt':'Egipto','Iran':'Irán','New Zealand':'Nueva Zelanda',
+      'Spain':'España','Cape Verde':'Cabo Verde','Saudi Arabia':'Arabia Saudita','Uruguay':'Uruguay',
+      'France':'Francia','Senegal':'Senegal','Iraq':'Irak','Norway':'Noruega',
+      'Argentina':'Argentina','Algeria':'Argelia','Austria':'Austria','Jordan':'Jordania',
+      'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbekistán','Colombia':'Colombia',
+      'England':'Inglaterra','Croatia':'Croacia','Ghana':'Ghana','Panama':'Panamá'
+    },
+    cities: {
+      'Mexico City':'Ciudad de México','Philadelphia':'Filadelfia','Los Angeles':'Los Ángeles',
+      'New York / NJ':'Nueva York / NJ'
+    },
+    stages: {'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'32AVOS','ROUND OF 16':'OCTAVOS',
+      'QUARTERS':'CUARTOS','SEMIS':'SEMIS','FINALS':'FINAL','3RD PLACE':'TERCER LUGAR'},
+    ko: {'ROUND OF 32':'DIECIS.','ROUND OF 16':'OCTAVOS','QUARTERFINAL':'CUARTOS','SEMIFINAL':'SEMIS','FINAL':'FINAL','3RD PLACE':'3ER LUGAR'},
+    days: {'SUN':'DOM','MON':'LUN','TUE':'MAR','WED':'MIÉ','THU':'JUE','FRI':'VIE','SAT':'SÁB'},
+    months: {'June':'Junio','July':'Julio'},
+    group:'GRUPO', knockout:'FASE ELIMINATORIA', champion:'CAMPEÓN',
+    matchLocations:'SEDES', allTimes:'Todos los horarios',
+    teams48:'48 Equipos', matches104:'104 Partidos',
+    title:'COPA MUNDIAL FIFA', hosts:'CANADÁ · MÉXICO · EE.UU.',
+    W:'G', D:'E', L:'P', GF:'GF', GA:'GC', Pts:'Pts'
+  },
+  pt: {
+    teams: {
+      'Mexico':'México','South Africa':'África do Sul','S. Korea':'Coreia do Sul','Czechia':'Chéquia',
+      'Canada':'Canadá','Bosnia & Hz':'Bósnia e Herz.','Qatar':'Catar','Switzerland':'Suíça',
+      'Brazil':'Brasil','Morocco':'Marrocos','Haiti':'Haiti','Scotland':'Escócia',
+      'United States':'Estados Unidos','Paraguay':'Paraguai','Australia':'Austrália','Türkiye':'Turquia',
+      'Germany':'Alemanha','Curaçao':'Curaçao','Ivory Coast':'Costa do Marfim','Ecuador':'Equador',
+      'Netherlands':'Países Baixos','Japan':'Japão','Sweden':'Suécia','Tunisia':'Tunísia',
+      'Belgium':'Bélgica','Egypt':'Egito','Iran':'Irã','New Zealand':'Nova Zelândia',
+      'Spain':'Espanha','Cape Verde':'Cabo Verde','Saudi Arabia':'Arábia Saudita','Uruguay':'Uruguai',
+      'France':'França','Senegal':'Senegal','Iraq':'Iraque','Norway':'Noruega',
+      'Argentina':'Argentina','Algeria':'Argélia','Austria':'Áustria','Jordan':'Jordânia',
+      'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbequistão','Colombia':'Colômbia',
+      'England':'Inglaterra','Croatia':'Croácia','Ghana':'Gana','Panama':'Panamá'
+    },
+    cities: {
+      'Mexico City':'Cidade do México','Philadelphia':'Filadelfia','Los Angeles':'Los Angeles',
+      'New York / NJ':'Nova York / NJ','Miami':'Miami','Boston':'Boston','Dallas':'Dallas',
+      'Houston':'Houston','Kansas City':'Kansas City','Seattle':'Seattle','San Francisco':'São Francisco',
+      'Atlanta':'Atlanta','Toronto':'Toronto','Vancouver':'Vancouver','Guadalajara':'Guadalajara','Monterrey':'Monterrey'
+    },
+    stages: {'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'FASE DE 32','ROUND OF 16':'OITAVAS DE FINAL',
+      'QUARTERS':'QUARTAS DE FINAL','SEMIS':'SEMIFINAIS','FINALS':'FINAL','3RD PLACE':'TERCEIRO LUGAR'},
+    ko: {'ROUND OF 32':'32AVOS','ROUND OF 16':'OITAVAS','QUARTERFINAL':'QUARTAS','SEMIFINAL':'SEMI','FINAL':'FINAL','3RD PLACE':'3º LUGAR'},
+    days: {'SUN':'DOM','MON':'SEG','TUE':'TER','WED':'QUA','THU':'QUI','FRI':'SEX','SAT':'SÁB'},
+    months: {'June':'Junho','July':'Julho'},
+    group:'GRUPO', knockout:'MATA-MATA', champion:'CAMPEÃO',
+    matchLocations:'SEDES', allTimes:'Todos os horários',
+    teams48:'48 Seleções', matches104:'104 Jogos',
+    title:'COPA DO MUNDO FIFA', hosts:'CANADÁ · MÉXICO · EUA',
+    W:'V', D:'E', L:'D', GF:'GP', GA:'GC', Pts:'Pts'
+  }
+};
+
+const TR = TRANSLATIONS[LANG] || { teams:{}, cities:{}, stages:{}, ko:{}, days:{}, months:{} };
+
+function t_team(name){ return (TR.teams && TR.teams[name]) ? TR.teams[name] : name; }
+function t_city(name){ return (TR.cities && TR.cities[name]) ? TR.cities[name] : name; }
+function t_day(d){ return (TR.days && TR.days[d]) ? TR.days[d] : d; }
+function t_stage(s){ return (TR.stages && TR.stages[s]) ? TR.stages[s] : s; }
+
 // ===== DYNAMIC CONFIGURATION =====
 const params=new URLSearchParams(window.location.search);
 const TZ=params.get('tz')||'ET';
