@@ -74,33 +74,6 @@
   .gm-ch{color:#aab;font-size:15px;font-weight:500;min-width:22px;text-align:right}
 @media print { body { zoom: 1 !important; } }
 </style>
-
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-  if (LANG === 'pt' || LANG === 'es') {
-    const t = TRANSLATIONS[LANG];
-    const h1 = document.querySelector('.title-bar h1');
-    if (h1) {
-      if (LANG === 'pt') h1.innerHTML = 'COPA DO MUNDO <span class="year">2026</span>';
-      if (LANG === 'es') h1.innerHTML = 'COPA MUNDIAL <span class="year">2026</span>';
-    }
-    const hostsEl = document.querySelector('.title-bar .hosts');
-    if (hostsEl) hostsEl.textContent = t.hosts;
-    
-    document.querySelectorAll('.group-title, .section-title, .ko-title').forEach(el => {
-      let txt = el.textContent.trim();
-      if (t.stages[txt]) el.textContent = t.stages[txt];
-      if (txt.includes('GROUP')) el.textContent = txt.replace('GROUP', t.group);
-    });
-    
-    document.querySelectorAll('th').forEach(th => {
-      let txt = th.textContent.trim();
-      if (t[txt]) th.textContent = t[txt];
-    });
-  }
-});
-</script>
-
 </head>
 <body>
 <div class="title-bar" id="title-bar-content"></div>
@@ -108,82 +81,6 @@ window.addEventListener('DOMContentLoaded', () => {
 <div id="grid-area"></div>
 <div id="groups-area"></div>
 <script>
-
-// ===== LANGUAGE SUPPORT =====
-const LANG = params.get('lang') || 'en';
-
-const TRANSLATIONS = {
-  es: {
-    teams: {
-      'Mexico':'México','South Africa':'Sudáfrica','S. Korea':'Corea del Sur','Czechia':'Chequia',
-      'Canada':'Canadá','Bosnia & Hz':'Bosnia y Hz','Qatar':'Catar','Switzerland':'Suiza',
-      'Brazil':'Brasil','Morocco':'Marruecos','Haiti':'Haití','Scotland':'Escocia',
-      'United States':'Estados Unidos','Paraguay':'Paraguay','Australia':'Australia','Türkiye':'Turquía',
-      'Germany':'Alemania','Curaçao':'Curazao','Ivory Coast':'Costa de Marfil','Ecuador':'Equador',
-      'Netherlands':'Países Bajos','Japan':'Japón','Sweden':'Suecia','Tunisia':'Túnez',
-      'Belgium':'Bélgica','Egypt':'Egipto','Iran':'Irán','New Zealand':'Nueva Zelanda',
-      'Spain':'España','Cape Verde':'Cabo Verde','Saudi Arabia':'Arabia Saudita','Uruguay':'Uruguay',
-      'France':'Francia','Senegal':'Senegal','Iraq':'Irak','Norway':'Noruega',
-      'Argentina':'Argentina','Algeria':'Argelia','Austria':'Austria','Jordan':'Jordania',
-      'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbekistán','Colombia':'Colombia',
-      'England':'Inglaterra','Croatia':'Croacia','Ghana':'Ghana','Panama':'Panamá'
-    },
-    cities: {
-      'Mexico City':'Ciudad de México','Philadelphia':'Filadelfia','Los Angeles':'Los Ángeles',
-      'New York / NJ':'Nueva York / NJ'
-    },
-    stages: {'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'32AVOS','ROUND OF 16':'OCTAVOS',
-      'QUARTERS':'CUARTOS','SEMIS':'SEMIS','FINALS':'FINAL','3RD PLACE':'TERCER LUGAR'},
-    ko: {'ROUND OF 32':'DIECIS.','ROUND OF 16':'OCTAVOS','QUARTERFINAL':'CUARTOS','SEMIFINAL':'SEMIS','FINAL':'FINAL','3RD PLACE':'3ER LUGAR'},
-    days: {'SUN':'DOM','MON':'LUN','TUE':'MAR','WED':'MIÉ','THU':'JUE','FRI':'VIE','SAT':'SÁB'},
-    months: {'June':'Junio','July':'Julio'},
-    group:'GRUPO', knockout:'FASE ELIMINATORIA', champion:'CAMPEÓN',
-    matchLocations:'SEDES', allTimes:'Todos los horarios',
-    teams48:'48 Equipos', matches104:'104 Partidos',
-    title:'COPA MUNDIAL FIFA', hosts:'CANADÁ · MÉXICO · EE.UU.',
-    W:'G', D:'E', L:'P', GF:'GF', GA:'GC', Pts:'Pts'
-  },
-  pt: {
-    teams: {
-      'Mexico':'México','South Africa':'África do Sul','S. Korea':'Coreia do Sul','Czechia':'Chéquia',
-      'Canada':'Canadá','Bosnia & Hz':'Bósnia e Herz.','Qatar':'Catar','Switzerland':'Suíça',
-      'Brazil':'Brasil','Morocco':'Marrocos','Haiti':'Haiti','Scotland':'Escócia',
-      'United States':'Estados Unidos','Paraguay':'Paraguai','Australia':'Austrália','Türkiye':'Turquia',
-      'Germany':'Alemanha','Curaçao':'Curaçao','Ivory Coast':'Costa do Marfim','Ecuador':'Equador',
-      'Netherlands':'Países Baixos','Japan':'Japão','Sweden':'Suécia','Tunisia':'Tunísia',
-      'Belgium':'Bélgica','Egypt':'Egito','Iran':'Irã','New Zealand':'Nova Zelândia',
-      'Spain':'Espanha','Cape Verde':'Cabo Verde','Saudi Arabia':'Arábia Saudita','Uruguay':'Uruguai',
-      'France':'França','Senegal':'Senegal','Iraq':'Iraque','Norway':'Noruega',
-      'Argentina':'Argentina','Algeria':'Argélia','Austria':'Áustria','Jordan':'Jordânia',
-      'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbequistão','Colombia':'Colômbia',
-      'England':'Inglaterra','Croatia':'Croácia','Ghana':'Gana','Panama':'Panamá'
-    },
-    cities: {
-      'Mexico City':'Cidade do México','Philadelphia':'Filadelfia','Los Angeles':'Los Angeles',
-      'New York / NJ':'Nova York / NJ','Miami':'Miami','Boston':'Boston','Dallas':'Dallas',
-      'Houston':'Houston','Kansas City':'Kansas City','Seattle':'Seattle','San Francisco':'São Francisco',
-      'Atlanta':'Atlanta','Toronto':'Toronto','Vancouver':'Vancouver','Guadalajara':'Guadalajara','Monterrey':'Monterrey'
-    },
-    stages: {'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'FASE DE 32','ROUND OF 16':'OITAVAS DE FINAL',
-      'QUARTERS':'QUARTAS DE FINAL','SEMIS':'SEMIFINAIS','FINALS':'FINAL','3RD PLACE':'TERCEIRO LUGAR'},
-    ko: {'ROUND OF 32':'32AVOS','ROUND OF 16':'OITAVAS','QUARTERFINAL':'QUARTAS','SEMIFINAL':'SEMI','FINAL':'FINAL','3RD PLACE':'3º LUGAR'},
-    days: {'SUN':'DOM','MON':'SEG','TUE':'TER','WED':'QUA','THU':'QUI','FRI':'SEX','SAT':'SÁB'},
-    months: {'June':'Junho','July':'Julho'},
-    group:'GRUPO', knockout:'MATA-MATA', champion:'CAMPEÃO',
-    matchLocations:'SEDES', allTimes:'Todos os horários',
-    teams48:'48 Seleções', matches104:'104 Jogos',
-    title:'COPA DO MUNDO FIFA', hosts:'CANADÁ · MÉXICO · EUA',
-    W:'V', D:'E', L:'D', GF:'GP', GA:'GC', Pts:'Pts'
-  }
-};
-
-const TR = TRANSLATIONS[LANG] || { teams:{}, cities:{}, stages:{}, ko:{}, days:{}, months:{} };
-
-function t_team(name){ return (TR.teams && TR.teams[name]) ? TR.teams[name] : name; }
-function t_city(name){ return (TR.cities && TR.cities[name]) ? TR.cities[name] : name; }
-function t_day(d){ return (TR.days && TR.days[d]) ? TR.days[d] : d; }
-function t_stage(s){ return (TR.stages && TR.stages[s]) ? TR.stages[s] : s; }
-
 
 // ===== DYNAMIC CONFIGURATION =====
 const params=new URLSearchParams(window.location.search);
@@ -230,11 +127,68 @@ const TR={
   // Group table headers
   W:'G',D:'E',L:'P',GF:'GF',GA:'GC',Pts:'Pts'
 };
+const TR_PT={
+  // Team names
+  teams:{
+    'Mexico':'México','South Africa':'África do Sul','S. Korea':'Coreia do Sul','Czechia':'Tchéquia',
+    'Canada':'Canadá','Bosnia & Hz':'Bósnia e Hz','Qatar':'Catar','Switzerland':'Suíça',
+    'Brazil':'Brasil','Morocco':'Marrocos','Haiti':'Haiti','Scotland':'Escócia',
+    'United States':'Estados Unidos','Paraguay':'Paraguai','Australia':'Austrália','Türkiye':'Turquia',
+    'Germany':'Alemanha','Curaçao':'Curaçao','Ivory Coast':'Costa do Marfim','Ecuador':'Equador',
+    'Netherlands':'Países Baixos','Japan':'Japão','Sweden':'Suécia','Tunisia':'Tunísia',
+    'Belgium':'Bélgica','Egypt':'Egito','Iran':'Irã','New Zealand':'Nova Zelândia',
+    'Spain':'Espanha','Cape Verde':'Cabo Verde','Saudi Arabia':'Arábia Saudita','Uruguay':'Uruguai',
+    'France':'França','Senegal':'Senegal','Iraq':'Iraque','Norway':'Noruega',
+    'Argentina':'Argentina','Algeria':'Argélia','Austria':'Áustria','Jordan':'Jordânia',
+    'Portugal':'Portugal','DR Congo':'RD Congo','Uzbekistan':'Uzbequistão','Colombia':'Colômbia',
+    'England':'Inglaterra','Croatia':'Croácia','Ghana':'Gana','Panama':'Panamá'
+  },
+  // City names
+  cities:{
+    'Mexico City':'Cidade do México','Philadelphia':'Filadélfia','Los Angeles':'Los Angeles',
+    'New York / NJ':'Nova York / NJ'
+  },
+  // Stage labels
+  stages:{'GROUP STAGE':'FASE DE GRUPOS','ROUND OF 32':'32AVOS','ROUND OF 16':'OITAVAS',
+    'QUARTERS':'QUARTAS','SEMIS':'SEMIS','FINALS':'FINAL','3RD PLACE':'3º LUGAR'},
+  // KO cell labels
+  ko:{'ROUND OF 32':'32 AVOS','ROUND OF 16':'OITAVAS','QUARTERFINAL':'QUARTAS','SEMIFINAL':'SEMIS','FINAL':'FINAL','3RD PLACE':'3º LUGAR'},
+  // Days
+  days:{'SUN':'DOM','MON':'SEG','TUE':'TER','WED':'QUA','THU':'QUI','FRI':'SEX','SAT':'SÁB'},
+  // Months
+  months:{'June':'Junho','July':'Julho'},
+  // UI
+  group:'GRUPO',knockout:'FASE ELIMINATÓRIA',champion:'CAMPEÃO',
+  matchLocations:'SEDES',allTimes:'Horários em',
+  teams48:'48 Seleções',matches104:'104 Jogos',
+  // Title
+  title:'COPA DO MUNDO FIFA',hosts:'CANADÁ · MÉXICO · EUA',
+  // Group table headers
+  W:'V',D:'E',L:'D',GF:'GP',GA:'GC',Pts:'Pts'
+};
 const showChan=true;  // channels in match cells follow timezone selection
-function t_team(name){return LANG==='es'&&TR.teams[name]?TR.teams[name]:name}
-function t_city(name){return LANG==='es'&&TR.cities[name]?TR.cities[name]:name}
-function t_day(d){return LANG==='es'&&TR.days[d]?TR.days[d]:d}
-function t_stage(s){return LANG==='es'&&TR.stages[s]?TR.stages[s]:s}
+function t_team(name){
+  if(LANG==='es'&&TR.teams[name])return TR.teams[name];
+  if(LANG==='pt'&&TR_PT.teams[name])return TR_PT.teams[name];
+  return name;
+}
+function t_city(name){
+  if(LANG==='es'&&TR.cities[name])return TR.cities[name];
+  if(LANG==='pt'&&TR_PT.cities[name])return TR_PT.cities[name];
+  return name;
+}
+function t_day(d){
+  if(LANG==='es'&&TR.days[d])return TR.days[d];
+  if(LANG==='pt'&&TR_PT.days[d])return TR_PT.days[d];
+  return d;
+}
+function t_stage(s){
+  if(LANG==='es'&&TR.stages[s])return TR.stages[s];
+  if(LANG==='pt'&&TR_PT.stages[s])return TR_PT.stages[s];
+  return s;
+}
+// Helper: pick value based on LANG (es|pt|en)
+function tL(es,pt,en){return LANG==='es'?es:LANG==='pt'?pt:en;}
 
 const THEME=params.get('theme')||'dark';
 const TZ_OFF={
@@ -249,7 +203,7 @@ const TZ_OFF={
 const TZ_NAME={
   ET:'Eastern US (ET)',CT:'Central US (CT)',MT:'Mountain US (MT)',PT:'Pacific US (PT)',BST:'UK (BST)',
   'UTC-11':'UTC\u221211 (Samoa)','UTC-10':'UTC\u221210 (Hawaii)','UTC-9':'UTC\u22129 (Alaska)',
-  'UTC-8':'UTC\u22128','UTC-7':'UTC\u22127','UTC-6':'UTC\u22126 '+(LANG==='es'?'(Ciudad de México)':'(Mexico City)'),
+  'UTC-8':'UTC\u22128','UTC-7':'UTC\u22127','UTC-6':'UTC\u22126 '+(LANG==='es'?'(Ciudad de México)':LANG==='pt'?'(Cidade do México)':'(Mexico City)'),
   'UTC-5':'UTC\u22125 (Colombia, Peru)','UTC-4':'UTC\u22124 (Atlantic)',
   'UTC-3':'UTC\u22123 (Argentina, Brazil)','UTC-2':'UTC\u22122','UTC-1':'UTC\u22121 (Cape Verde)',
   'UTC+0':'UTC+0 (GMT, Iceland)','UTC+1':'UTC+1 (West Africa, Nigeria)',
@@ -489,7 +443,7 @@ const SIZES={
 const SZ=SIZES[SIZE]||SIZES['22x17'];
 document.body.style.width=SZ.w+'px';
 document.body.style.height=SZ.h+'px';
-const VW=SZ.vw+(LANG==='es'?12:0),GW=SZ.w-VW,grpH=SZ.grpH;
+const VW=SZ.vw+(['es','pt'].includes(LANG)?12:0),GW=SZ.w-VW,grpH=SZ.grpH;
 // Size-dependent styles
 document.querySelector('style').textContent+=`
 .v-city{font-size:${SZ.cityF}px!important}
@@ -522,14 +476,14 @@ const gsStartDay=gsMinDate%100;
 {
   const tb=document.getElementById('title-bar-content');
   const firstDay=gsStartDay;const lastDay=ddEndDay;
-  const datesText=dateFmt==='uk'?firstDay+' '+(LANG==='es'?'JUNIO':'JUNE')+' \u2013 '+lastDay+' '+(LANG==='es'?'JULIO':'JULY'):(LANG==='es'?'JUNIO':'JUNE')+' '+firstDay+' \u2013 '+(LANG==='es'?'JULIO':'JULY')+' '+lastDay;
+  const datesText=dateFmt==='uk'?firstDay+' '+tL('JUNIO','JUNHO','JUNE')+' \u2013 '+lastDay+' '+tL('JULIO','JULHO','JULY'):tL('JUNIO','JUNHO','JUNE')+' '+firstDay+' \u2013 '+tL('JULIO','JULHO','JULY')+' '+lastDay;
   const tvText=tvMode==='us'?'FOX / FS1':tvMode==='uk'?'BBC / ITV':'';
   const clockLabel=CLOCK==='24'?' (24h)':'';
-  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(LANG!=='es'&&tvText?' \u00a0|\u00a0 '+tvText:'');
-  tb.innerHTML='<h1>2026 <span class="year">'+(LANG==='es'?'Copa Mundial FIFA':'FIFA World Cup')+'</span></h1>'+
-    '<div class="hosts" style="margin-left:'+(LANG==='es'?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+(LANG==='es'?'CANADÁ':'CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+(LANG==='es'?'MÉXICO':'MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+(LANG==='es'?'EE.UU.':'USA')+'</span></div>'+
-    '<div class="dates" style="margin-left:'+(LANG==='es'?'65':'85')+'px">'+datesText+'</div>'+
-    '<div class="title-info">'+(LANG==='es'?'48 Equipos \u00a0|\u00a0 104 Partidos':'48 Teams \u00a0|\u00a0 104 Matches')+'<br>'+infoLine2+'</div>';
+  const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():LANG==='pt'?'Horários em '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(LANG==='en'&&tvText?' \u00a0|\u00a0 '+tvText:'');
+  tb.innerHTML='<h1>2026 <span class="year">'+tL('Copa Mundial FIFA','Copa do Mundo FIFA','FIFA World Cup')+'</span></h1>'+
+    '<div class="hosts" style="margin-left:'+([\'es\',\'pt\'].includes(LANG)?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+tL('CANADÁ','CANADÁ','CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+tL('MÉXICO','MÉXICO','MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+tL('EE.UU.','EUA','USA')+'</span></div>'+
+    '<div class="dates" style="margin-left:'+([\'es\',\'pt\'].includes(LANG)?'65':'85')+'px">'+datesText+'</div>'+
+    '<div class="title-info">'+tL('48 Equipos \u00a0|\u00a0 104 Partidos','48 Seleções \u00a0|\u00a0 104 Jogos','48 Teams \u00a0|\u00a0 104 Matches')+'<br>'+infoLine2+'</div>';
 }
 
 const gsEndMo=Math.floor(gsMaxDate/100);
@@ -552,6 +506,7 @@ function cellBg(co,ev){
 const hdrE=P.hdrE,hdrO=P.hdrO;
 const KOL=SZ.koSmall?{R32:'ROUND<span style="font-size:60%;margin:0 0px">OF</span><span style="font-size:24px">32</span>',R16:'ROUND<span style="font-size:60%;margin:0 0px">OF</span><span style="font-size:24px">16</span>',QF:'<span style="font-size:20px">QUARTERS</span>',SF:'<span style="font-size:20px">SEMIFINAL</span>','3RD':'3RD PLACE',FIN:'🏆 FINAL'}:{R32:'ROUND OF <span style="font-size:24px">32</span>',R16:'ROUND OF <span style="font-size:24px">16</span>',QF:'<span style="font-size:20px">QUARTERS</span>',SF:'<span style="font-size:20px">SEMIFINAL</span>','3RD':'3RD PLACE',FIN:'🏆 FINAL'}
 if(LANG==='es'){Object.assign(KOL,{R32:'32<span style="font-size:60%;margin:0 1px">AVOS</span>',R16:'OCTAVOS',QF:'<span style="font-size:20px">CUARTOS</span>',SF:'<span style="font-size:20px">SEMIFINAL</span>','3RD':'3ER LUGAR',FIN:'🏆 FINAL'})};
+if(LANG==='pt'){Object.assign(KOL,{R32:'32<span style="font-size:60%;margin:0 1px">AVOS</span>',R16:'OITAVAS',QF:'<span style="font-size:20px">QUARTAS</span>',SF:'<span style="font-size:20px">SEMIFINAL</span>','3RD':'3º LUGAR',FIN:'🏆 FINAL'})};
 
 const ga=document.getElementById('grid-area'),vc=document.getElementById('venue-col');
 ga.style.left=VW+'px';vc.style.width=VW+'px';
@@ -563,8 +518,8 @@ function dateRange(m1,d1,m2,d2){let s=0,e=0;DD.forEach((d,i)=>{if(d&&d.getMonth(
 const[,junE]=dateRange(5,11,5,30);const[julS,]=dateRange(6,1,6,1);
 let moStr='<div class="month-strip">';
 DD.forEach((d,i)=>{const bg=d?(isEv(d)?hdrE:hdrO):hdrE;moStr+=`<div class="month-bg" style="width:${dW[i]}px;background-color:${bg}"></div>`});
-moStr+=`<div class="month-label-abs" style="left:0;width:${junE}px">${LANG==='es'?'JUNIO':'JUNE'}</div>`;
-moStr+=`<div class="month-label-abs" style="left:${julS}px;width:${cumPx-julS}px">${LANG==='es'?'JULIO':'JULY'}</div>`;
+moStr+=`<div class="month-label-abs" style="left:0;width:${junE}px">${tL('JUNIO','JUNHO','JUNE')}</div>`;
+moStr+=`<div class="month-label-abs" style="left:${julS}px;width:${cumPx-julS}px">${tL('JULIO','JULHO','JULY')}</div>`;
 moStr+='</div>';
 
 let dh='<div class="date-hdr">';
@@ -640,11 +595,11 @@ offDays.forEach(([mo2,dy])=>{
     last[2]=mo2;last[3]=dy;
   }else{offSpans.push([mo2,dy,mo2,dy])}
 });
-offSpans.forEach(([m1,d1,m2,d2])=>{const[s,]=dateRange(m1,d1,m1,d1);const[,e]=dateRange(m2,d2,m2,d2);if(e>s)stg+=`<div class="stage-off-abs" style="left:${s}px;width:${e-s}px">${LANG==="es"?"LIBRE":"OFF"}</div>`});
+offSpans.forEach(([m1,d1,m2,d2])=>{const[s,]=dateRange(m1,d1,m1,d1);const[,e]=dateRange(m2,d2,m2,d2);if(e>s)stg+=`<div class="stage-off-abs" style="left:${s}px;width:${e-s}px">${LANG==='es'?'LIVRE':LANG==='pt'?'LIVRE':'OFF'}</div>`});
 stg+='</div>';
 
 const topH=moH+hdrH+stgH;
-let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 29px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">${LANG==='es'?'SEDES':'MATCH<br>LOCATIONS'}</div>`;
+let vcH=`<div style="height:${topH}px;border-bottom:2px solid ${P.border1};border-right:2px solid ${P.vColor};border-left:4px solid ${P.vColor};background-color:${P.venueHdr};display:flex;align-items:center;justify-content:center;padding:27px 29px 4px 4px;font-size:26px;font-weight:700;color:${P.textDates};letter-spacing:1px;text-align:center;line-height:1.2">${tL('SEDES','SEDES','MATCH<br>LOCATIONS')}</div>`;
 V.forEach((v,vi)=>{const rh=vi===V.length-1?lastRowH:rowH;vcH+=`<div class="v-label v-${v.co}" style="height:${rh}px"><div class="v-city">${t_city(v.city)}</div><div class="v-stad">${v.stad}</div></div>`});
 vc.innerHTML=vcH;
 
@@ -674,11 +629,11 @@ V.forEach((v,vi)=>{
           const rd=KOL[grp]||grp;const hasT=!!t1;const hasF=!!f1;let r3='';
           if(hasT)r3=`<div class="mc-ko-feeder">${t1} <span style="color:${P.textGold}">v</span> ${t2}</div>`;
           if(hasF)r3+=`<div class="mc-ko-feeder">${f1} <span style="color:${P.textGold}">v</span> ${f2}</div>`;
-          inner+=`<div style="flex:1.2"></div><div class="mc-ko-round" style="${grp==="FIN"?"font-size:26px":""}">${rd}</div><div style="height:6px"></div><div class="mc-ko-num">${LANG==='es'?'Partido':'Match'} #${num}</div><div style="height:6px"></div>${r3}<div style="height:6px"></div><div class="mc-ko-time">${tD}${showChan&&chan?'·'+chan:''}</div><div style="flex:1"></div>`;
+          inner+=`<div style="flex:1.2"></div><div class="mc-ko-round" style="${grp==="FIN"?"font-size:26px":""}">${rd}</div><div style="height:6px"></div><div class="mc-ko-num">${tL('Partido','Jogo','Match')} #${num}</div><div style="height:6px"></div>${r3}<div style="height:6px"></div><div class="mc-ko-time">${tD}${showChan&&chan?'·'+chan:''}</div><div style="flex:1"></div>`;
         } else {
           inner+=`<div class="mc-teams-row"><span class="mc-team-left">${t1}</span><span class="mc-tv">v</span><span class="mc-team-right">${t2}</span></div>
             <div class="mc-flags-row"><div class="mc-flag-wrap"><img class="mc-flag" src="${fU(t1)}" alt="${t1}"></div><div class="mc-flag-wrap"><img class="mc-flag" src="${fU(t2)}" alt="${t2}"></div></div>
-            <div class="mc-botline"><span class="mc-grp">${LANG==='es'?'GRUPO':'GROUP'} ${grp}</span><span class="mc-num">#${num}</span><span class="mc-time">${tD}${showChan&&chan?'·'+chan:''}</span></div>`;
+            <div class="mc-botline"><span class="mc-grp">${tL('GRUPO','GRUPO','GROUP')} ${grp}</span><span class="mc-num">#${num}</span><span class="mc-time">${tD}${showChan&&chan?'·'+chan:''}</span></div>`;
         }
         gh+=`<div class="mc" style="left:-${oP}%;width:${wP}%;background-color:${bg};z-index:5;overflow:hidden">${inner}</div>`;
       });
@@ -766,7 +721,7 @@ bTxt(bFinX,bFinY+10,'Match',16,P.koFeeder,'middle');bTxt(bFinX,bFinY+24,'#104',1
 bTxt(bFinX,bFinY+42,'3rd · #103',14,'#778','middle');
 
 // Add title
-bTxt(bSeedR/2+bSeedL/2,18,LANG==='es'?'FASE ELIMINATORIA':'KNOCKOUT STAGE',26,bGC,'middle');
+bTxt(bSeedR/2+bSeedL/2,18,tL('FASE ELIMINATORIA','FASE ELIMINATÓRIA','KNOCKOUT STAGE'),26,bGC,'middle');
 
 const bMaxY=bLeft.botY+35;
 brSvg.setAttribute('width',bSeedR+40);
@@ -795,10 +750,10 @@ ga.appendChild(tDiv);
 
 
 const gA=document.getElementById('groups-area');
-const grpTitle=dateFmt==='uk'?(LANG==='es'?'Fase de Grupos':'Group Stage')+' \u2022 '+(LANG==='es'?'12 Grupos \u2022 48 Equipos':'12 Groups \u2022 48 Teams')+' \u2022 '+gsStartDay+'\u2013'+gsEndDay+' '+(LANG==='es'?'Junio':'June')+' 2026':(LANG==='es'?'Fase de Grupos':'Group Stage')+' \u2022 '+(LANG==='es'?'12 Grupos \u2022 48 Equipos':'12 Groups \u2022 48 Teams')+' \u2022 '+(LANG==='es'?'Junio':'June')+' '+gsStartDay+'\u2013'+gsEndDay+', 2026';
+const grpTitle=dateFmt==='uk'?tL('Fase de Grupos','Fase de Grupos','Group Stage')+' \u2022 '+tL('12 Grupos \u2022 48 Equipos','12 Grupos \u2022 48 Seleções','12 Groups \u2022 48 Teams')+' \u2022 '+gsStartDay+'\u2013'+gsEndDay+' '+tL('Junio','Junho','June')+' 2026':tL('Fase de Grupos','Fase de Grupos','Group Stage')+' \u2022 '+tL('12 Grupos \u2022 48 Equipos','12 Grupos \u2022 48 Seleções','12 Groups \u2022 48 Teams')+' \u2022 '+tL('Junio','Junho','June')+' '+gsStartDay+'\u2013'+gsEndDay+', 2026';
 let gH='<div class="groups-title">'+grpTitle+'</div><div class="groups-grid">';
 Object.keys(GROUPS).forEach(g=>{
-  gH+='<div class="grp-box"><div class="grp-hdr">'+(LANG==='es'?'GRUPO':'GROUP')+'\u00A0'+g+'</div>';
+  gH+='<div class="grp-box"><div class="grp-hdr">'+tL('GRUPO','GRUPO','GROUP')+'\u00A0'+g+'</div>';
   GROUPS[g].forEach(([iso,ab,nm])=>{gH+=`<div class="grp-team"><div class="fl-wrap"><img class="fl" src="https://flagcdn.com/w80/${iso}.png" alt="${ab}"></div><span class="ab">${ab}</span><span class="nm">${t_team(nm)}</span></div>`});
   gH+='<div class="grp-matches">';
   GM[g].forEach(s=>{const p=s.split(' ');const tD=fmt24((p[4].includes(':')&&p[5])?p[4].replace(/[ap]$/,''):p[4]);

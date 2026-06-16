@@ -160,10 +160,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
     </div>
     <div class="config-group">
       <label id="lbl-lang">Language</label>
-      <select id="sel-lang" onchange="if(this.value==='es'){window.location.href='?lang=es'}else{window.location.href=window.location.pathname}">
+      <select id="sel-lang" onchange="if(this.value==='es'){window.location.href='?lang=es'}else if(this.value==='pt'){window.location.href='?lang=pt'}else{window.location.href=window.location.pathname}">
         <option value="en">English</option>
         <option value="es">Español</option>
-            <option value="pt">Português (BR)</option>
+        <option value="pt">Português (BR)</option>
       </select>
     </div>
   </div>
@@ -222,8 +222,8 @@ function update() {
   document.getElementById('btn-download').href = 'poster.html';
   
   const usZones = ['ET','CT','MT','PT'];
-  if (p.lang === 'es') {
-    // Spanish: always show both toggles, default 24h + DD/MM
+  if (p.lang === 'es' || p.lang === 'pt') {
+    // Spanish / Portuguese: always show both toggles, default 24h + DD/MM
     document.getElementById('clock-toggle').style.display='block';
     document.getElementById('datefmt-toggle').style.display='block';
     if (p.tz !== _prevTZ && !_initDone) { document.getElementById('sel-clock').value='24'; document.getElementById('sel-datefmt').value='uk'; }
@@ -325,6 +325,11 @@ if (_urlLang === 'es') {
   document.getElementById('sel-clock').value = '24';
   document.getElementById('sel-datefmt').value = 'uk';
 }
+if (_urlLang === 'pt') {
+  document.getElementById('sel-tz').value = 'UTC-3';
+  document.getElementById('sel-clock').value = '24';
+  document.getElementById('sel-datefmt').value = 'uk';
+}
 
 const _es = {
   'Color Scheme':'Esquema de Color','Dark (screen / poster print)':'Oscuro (pantalla / póster)',
@@ -339,6 +344,20 @@ const _es = {
   'Download PDF':'Descargar PDF','Download PNG':'Descargar PNG','Download HTML':'Descargar HTML',
   'Live Preview':'Vista Previa','Printing Tips':'Consejos de Impresión',
   'Loading preview…':'Cargando vista previa…'
+};
+const _pt = {
+  'Color Scheme':'Esquema de Cores','Dark (screen / poster print)':'Escuro (tela / impressão)',
+  'Light (printer-friendly)':'Claro (para impressora)','Time Zone':'Fuso Horário',
+  'Paper Size':'Tamanho do Papel','Language':'Idioma',
+  'Clock Format':'Formato de Hora','Date Format':'Formato de Data','Auto (by timezone)':'Auto (pelo fuso horário)','24-hour (15:00)':'24 horas (15:00)','12-hour (3p)':'12 horas (3p)',
+  'Letter Landscape (11×8.5″)':'Carta Paisagem (11×8,5″)',
+  'A3 Landscape (420×297mm)':'A3 Paisagem (420×297mm)',
+  '24 × 16″ (3:2 poster)':'24 × 16″ (pôster 3:2)',
+  '24 × 36″ (Vertical poster)':'24 × 36″ (Pôster vertical)',
+  'Open Poster':'Abrir Pôster','Print':'Imprimir',
+  'Download PDF':'Baixar PDF','Download PNG':'Baixar PNG','Download HTML':'Baixar HTML',
+  'Live Preview':'Pré-visualização','Printing Tips':'Dicas de Impressão',
+  'Loading preview…':'Carregando pré-visualização…'
 };
 function applyLang(){
   const lang=document.getElementById('sel-lang').value;
@@ -384,6 +403,49 @@ function applyLang(){
     document.title='Copa Mundial FIFA 2026 – Calendario';
     var ogT=document.querySelector('meta[property="og:title"]');if(ogT)ogT.content='Copa Mundial FIFA 2026 – Calendario';
     var twT=document.querySelector('meta[name="twitter:title"]');if(twT)twT.content='Copa Mundial FIFA 2026 – Calendario';
+  } else if(lang==='pt'){
+    // Main header
+    document.querySelector('.cup').textContent='Copa do Mundo FIFA';
+    document.querySelector('.ca').textContent='CANADÁ';
+    document.querySelector('.mx').textContent='MÉXICO';
+    document.querySelector('.us').textContent='EUA';
+    document.querySelector('.sub').textContent='Tabela imprimível — todos os 104 jogos, sedes, horários, chaveamento das eliminatórias e grupos.';
+    // Timezone dropdown
+    document.querySelectorAll('#sel-tz optgroup').forEach(g=>{
+      if(g.label.includes('US'))g.label='🇺🇸 EUA e 🇬🇧 Reino Unido — com canais de TV';
+      if(g.label.includes('All Time'))g.label='Todos os fusos horários';
+    });
+    document.querySelectorAll('#sel-tz option').forEach(o=>{
+      o.textContent=o.textContent
+        .replace('Eastern US','Leste dos EUA').replace('Central US','Centro dos EUA')
+        .replace('Mountain US','Montanha dos EUA').replace('Pacific US','Pacífico dos EUA')
+        .replace('UK (BST)','Reino Unido (BST)')
+        .replace('Mexico City','Cidade do México').replace('Eastern Std','Leste')
+        .replace('Central Std','Centro').replace('Pacific Std','Pacífico').replace('Mountain Std','Montanha')
+        .replace('Mid-Atlantic','Atlântico Médio').replace('South Africa','África do Sul')
+        .replace('Saudi Arabia','Arábia Saudita').replace('Australia East','Austrália Leste')
+        .replace('New Zealand','Nova Zelândia').replace('Solomon Islands','Ilhas Salomão')
+        .replace('São Paulo','São Paulo');
+    });
+    // Labels and dropdowns
+    document.querySelectorAll('label').forEach(l=>{if(_pt[l.textContent])l.textContent=_pt[l.textContent]});
+    document.querySelectorAll('option').forEach(o=>{if(_pt[o.textContent])o.textContent=_pt[o.textContent]});
+    document.querySelector('.preview-label').textContent=_pt['Live Preview'];
+    var ov=document.getElementById('overlay');if(ov)ov.textContent=_pt['Loading preview…']||'';
+    // Buttons
+    var btns=document.querySelectorAll('.btn');
+    btns.forEach(b=>{
+      if(b.textContent.includes('Open Poster'))b.textContent='↗ '+_pt['Open Poster'];
+      if(b.textContent.includes('Print')&&!b.textContent.includes('PDF'))b.textContent='🖨 '+_pt['Print'];
+      if(b.textContent.includes('Download PDF'))b.textContent='📥 '+_pt['Download PDF'];
+      if(b.textContent.includes('Download PNG'))b.textContent='🖼 '+_pt['Download PNG'];
+      if(b.textContent.includes('Download HTML'))b.textContent='📄 '+_pt['Download HTML'];
+    });
+    var h2=document.querySelector('.how-to h2');
+    if(h2)h2.textContent=_pt['Printing Tips'];
+    document.title='Copa do Mundo FIFA 2026 – Tabela';
+    var ogT=document.querySelector('meta[property="og:title"]');if(ogT)ogT.content='Copa do Mundo FIFA 2026 – Tabela';
+    var twT=document.querySelector('meta[name="twitter:title"]');if(twT)twT.content='Copa do Mundo FIFA 2026 – Tabela';
   }
 }
 applyLang();
