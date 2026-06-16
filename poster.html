@@ -481,8 +481,8 @@ const gsStartDay=gsMinDate%100;
   const clockLabel=CLOCK==='24'?' (24h)':'';
   const infoLine2=(LANG==='es'?'Horarios en '+TZ_NAME[TZ].split('(')[0].trim():LANG==='pt'?'Horários em '+TZ_NAME[TZ].split('(')[0].trim():'All times '+TZ_NAME[TZ]+clockLabel)+(LANG==='en'&&tvText?' \u00a0|\u00a0 '+tvText:'');
   tb.innerHTML='<h1>2026 <span class="year">'+tL('Copa Mundial FIFA','Copa do Mundo FIFA','FIFA World Cup')+'</span></h1>'+
-    '<div class="hosts" style="margin-left:'+([\'es\',\'pt\'].includes(LANG)?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+tL('CANADÁ','CANADÁ','CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+tL('MÉXICO','MÉXICO','MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+tL('EE.UU.','EUA','USA')+'</span></div>'+
-    '<div class="dates" style="margin-left:'+([\'es\',\'pt\'].includes(LANG)?'65':'85')+'px">'+datesText+'</div>'+
+    '<div class="hosts" style="margin-left:'+(LANG==='es'||LANG==='pt'?'65':'85')+'px"><span style="color:'+P.textHost[0]+'">'+tL('CANADÁ','CANADÁ','CANADA')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[1]+'">'+tL('MÉXICO','MÉXICO','MEXICO')+'</span> <span style="color:'+P.dotColor+'">\u2022</span> <span style="color:'+P.textHost[2]+'">'+tL('EE.UU.','EUA','USA')+'</span></div>'+
+    '<div class="dates" style="margin-left:'+(LANG==='es'||LANG==='pt'?'65':'85')+'px">'+datesText+'</div>'+
     '<div class="title-info">'+tL('48 Equipos \u00a0|\u00a0 104 Partidos','48 Seleções \u00a0|\u00a0 104 Jogos','48 Teams \u00a0|\u00a0 104 Matches')+'<br>'+infoLine2+'</div>';
 }
 
